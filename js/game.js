@@ -1,4 +1,4 @@
-var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game-canvas', { preload: preload, create: create, update: update });
+var game = new Phaser.Game(640, 380, Phaser.AUTO, 'game-canvas', { preload: preload, create: create, update: update });
 
 function preload() {
     //The sprites need to be loaded in order so in our case we need to 
@@ -19,7 +19,7 @@ function create() {
 }
 
 function update() {
-    scrolling.tilePosition.y += 5; 
+    scrolling.tilePosition.x += 5; 
 }
 
 
