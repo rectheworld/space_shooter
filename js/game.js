@@ -1,5 +1,6 @@
-var game = new Phaser.Game(640, 380, Phaser.AUTO, 'game-canvas', { preload: preload, create: create, update: update, render: render });
+var game = new Phaser.Game(640, 480, Phaser.AUTO, 'game-canvas', { preload: preload, create: create, update: update, render: render });
 
+//Prepare assets to be loaded 
 function preload() {
     //The sprites need to be loaded in order so in our case we need to 
     game.load.image('background', '../images/space.jpg');
@@ -7,7 +8,6 @@ function preload() {
     
     //Load the player assets
     game.load.image('main_player', '../images/player.png');
-    
     
     //Load the projectile assets
     game.load.image('bullet', '../images/bullet.png');
@@ -22,7 +22,9 @@ var bullets;
 var fireButton;
 var nextFire = 0; 
 var bulletTime = 0;
+var gameover = false; 
 
+//Ran once to load all the necessary sprites and objects in the game
 function create() {
     game.physics.startSystem(Phaser.Physics.ARCADE);
     
@@ -38,25 +40,25 @@ function create() {
     
     //Add the enemies 
     
+    
     //Add Bullets 
     bullets = game.add.group();
     bullets.enableBody = true; 
     bullets.physicsBodyType = Phaser.Physics.ARCADE;
     
+    //Creates bullet pools
     bullets.createMultiple(20, 'bullet');
     bullets.setAll('anchor.x', 0.5);
     bullets.setAll('anchor.y', 1);
     bullets.setAll('outOfBoundsKill', true);
     bullets.setAll('checkWorldBounds', true);
     
-    
-    
-    
     //Add the controls
     controls = game.input.keyboard.createCursorKeys();
     fireButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 }
 
+//Runs constantly referred to as the game loop 
 function update() {
     scrolling.tilePosition.x += 5; 
     
@@ -69,11 +71,12 @@ function update() {
     //If this doesn't reset the player flies of the screen when velocity is changed
     main_player.body.velocity.setTo(0, 0);
     
-    //If left is pressed
+    //If up is pressed
     if(controls.up.isDown){
         main_player.body.velocity.y = -200;
     }
     
+    //If down is pressed 
     else if(controls.down.isDown){
         main_player.body.velocity.y = 200;
     }
@@ -82,8 +85,9 @@ function update() {
     if(fireButton.isDown){
         //game.debug.text('Fire Pressed ' + fireButton.isDown, 32, 32);
         fire();
-        
     }
+    
+    game.physics.arcade.overlap(bullets, aliens, collisionHandler, null, this);
 }
 
 function fire(){
