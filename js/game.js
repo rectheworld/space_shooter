@@ -140,10 +140,10 @@ function boss1_deatils(boss1){
     
     boss1.py = boss1.points.y;
 
-    for (var i = 0; i < py.length; i++)
-    {
-        py[i] = game.rnd.realInRange(32, 432);
-    }
+//    for (var i = 0; i < py.length; i++)
+//    {
+//        py[i] = game.rnd.realInRange(32, 432);
+//    }
     
     return(boss1)
     
@@ -195,19 +195,19 @@ function update() {
     boss1_update(boss1)
     
     
-   boss1.x = boss1.path[boss1.pi].x;
-    boss1.y = boss1.path[boss1.pi].y;
+//   boss1.x = boss1.path[boss1.pi].x;
+//    boss1.y = boss1.path[boss1.pi].y;
 
-    boss1.pi++;
-
-    if (boss1.pi >= boss1.path.length)
-    {
-        boss1.pi = 0;
-    }
+//    boss1.pi++;
+//
+//    if (boss1.pi >= boss1.path.length)
+//    {
+//        boss1.pi = 0;
+//    }
     
     
     
-    game.physics.arcade.overlap(bullets, aliens, collisionHandler, null, this);
+//    game.physics.arcade.overlap(bullets, aliens, collisionHandler, null, this);
 } // End Update Function 
 
 function fire(){
