@@ -269,8 +269,6 @@ function boss2_update(boss2){
 
 //Runs constantly referred to as the game loop 
 function update() {
-
-    
     if(!gameover){
         scrolling.tilePosition.x += 5;
         
@@ -279,6 +277,7 @@ function update() {
 
         //If up is pressed
         if(controls.up.isDown){
+            game.debug.text('Game Time ' + game.time.now, 100, 100);
             main_player.body.velocity.y = -200;
         }
         //If down is pressed 
@@ -292,20 +291,15 @@ function update() {
             //game.debug.text('Fire Pressed ' + fireButton.isDown, 32, 32);
             fire(main_player);
         }
-
-        //Controls the behavior of the boss
-        boss1_update(boss1);
-        
-        //If this doesn't reset the player flies of the screen when velocity is changed
-        main_player.body.velocity.setTo(0, 0);
-
     
         //Needs to be in it's own if statement 
         if(fireButton.isDown){
             //game.debug.text('Fire Pressed ' + fireButton.isDown, 32, 32);
             fire();
         }
-
+        
+        //Controls the behavior of the boss
+        boss1_update(boss1);
 
         boss1_update(boss1)
         boss2_update(boss2)
