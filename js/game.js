@@ -45,16 +45,16 @@ function create() {
     
     //Add Tile background to give scrolling effect
     scrolling = game.add.tileSprite(0, 0, 800, 600, 'background');
-<<<<<<< HEAD
+
     //game.add.state()
-=======
+
     
     //Create player object
     main_player = game.add.sprite(50, 380/2, 'main_player');
     //Double Check to see what this means 
     //main_player.anchor.setTo(0.5, 0.5);
     game.physics.enable(main_player, Phaser.Physics.ARCADE);
->>>>>>> e08b07e3ffda5552601dd5c5612c00dc9a4ea350
+
     
     
     //Add the enemies 
@@ -119,7 +119,6 @@ function create() {
     fireButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 }
 
-<<<<<<< HEAD
 
 function boss1_deatils(boss1){
     
@@ -163,23 +162,6 @@ function boss1_update(boss1){
 }   
 
 
-function update() {
-    scrolling.tilePosition.x -= 5; 
-    boss1_update(boss1)
-    
-    
-   boss1.x = boss1.path[boss1.pi].x;
-    boss1.y = boss1.path[boss1.pi].y;
-
-    boss1.pi++;
-
-    if (boss1.pi >= boss1.path.length)
-    {
-        boss1.pi = 0;
-    }
-    
-    
-=======
 //Runs constantly referred to as the game loop 
 function update() {
     scrolling.tilePosition.x += 5; 
@@ -209,8 +191,24 @@ function update() {
         fire();
     }
     
+    
+    boss1_update(boss1)
+    
+    
+   boss1.x = boss1.path[boss1.pi].x;
+    boss1.y = boss1.path[boss1.pi].y;
+
+    boss1.pi++;
+
+    if (boss1.pi >= boss1.path.length)
+    {
+        boss1.pi = 0;
+    }
+    
+    
+    
     game.physics.arcade.overlap(bullets, aliens, collisionHandler, null, this);
-}
+} // End Update Function 
 
 function fire(){
     if(game.time.now > bulletTime){
@@ -227,7 +225,7 @@ function fire(){
 }
 function render(){
     //game.debug.text('Game Time ' + game.time.now, 100, 100);
->>>>>>> e08b07e3ffda5552601dd5c5612c00dc9a4ea350
+
 }
 
 
