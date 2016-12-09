@@ -31,16 +31,18 @@ var firingTimer = 0;
 var scrolling;
 var main_player;
 var controls;
+var boss1; 
 
 
 var bullets;
 var fireButton;
 var nextFire = 0; 
 var bulletTime = 0;
-var gameover = false; 
+var gameover; 
 
 //Ran once to load all the necessary sprites and objects in the game
 function create() {
+    gameover = false;
     game.physics.startSystem(Phaser.Physics.ARCADE);
     
     //Add Tile background to give scrolling effect
@@ -99,9 +101,6 @@ function create() {
     enemyBullets.setAll('checkWorldBounds', true);
     
     
-    
-    
-    
     //Add Bullets 
     bullets = game.add.group();
     bullets.enableBody = true; 
@@ -147,24 +146,36 @@ function boss1_deatils(boss1){
     
     return(boss1)
     
-}
-    
-function boss1_update(boss1){
-    // selct a random numer 
-    randomNumber = game.rnd.realInRange(1, 1000);
-    
-    if(randomNumber <= boss1.attackFreq){
-        console.log('FIRE BOSS 1!')
-        fireBullet();
-    }
-    
-
-}   
-
+}  
 
 //Runs constantly referred to as the game loop 
 function update() {
-    scrolling.tilePosition.x += 5; 
+    
+    if(!gameover){
+        scrolling.tilePosition.x += 5;
+        
+        //If this doesn't reset the player flies of the screen when velocity is changed
+        main_player.body.velocity.setTo(0, 0);
+
+        //If up is pressed
+        if(controls.up.isDown){
+            main_player.body.velocity.y = -200;
+        }
+
+        //If down is pressed 
+        else if(controls.down.isDown){
+            main_player.body.velocity.y = 200;
+        }
+
+        //Needs to be in it's own if statement 
+        if(fireButton.isDown){
+            //game.debug.text('Fire Pressed ' + fireButton.isDown, 32, 32);
+            fire(main_player);
+        }
+
+        //Controls the behavior of the boss
+        boss1_update(boss1);
+    }       
     
 //    switch(controls){
 //          case controls.left.isDown:  
@@ -172,87 +183,72 @@ function update() {
 //            break;
 //    }
     
-    //If this doesn't reset the player flies of the screen when velocity is changed
-    main_player.body.velocity.setTo(0, 0);
-    
-    //If up is pressed
-    if(controls.up.isDown){
-        main_player.body.velocity.y = -200;
-    }
-    
-    //If down is pressed 
-    else if(controls.down.isDown){
-        main_player.body.velocity.y = 200;
-    }
-    
-    //Needs to be in it's own if statement 
-    if(fireButton.isDown){
-        //game.debug.text('Fire Pressed ' + fireButton.isDown, 32, 32);
-        fire();
-    }
-    
-    
-    boss1_update(boss1)
-    
-    
-//   boss1.x = boss1.path[boss1.pi].x;
-//    boss1.y = boss1.path[boss1.pi].y;
-
-//    boss1.pi++;
-//
-//    if (boss1.pi >= boss1.path.length)
-//    {
-//        boss1.pi = 0;
-//    }
     
     
     
-//    game.physics.arcade.overlap(bullets, aliens, collisionHandler, null, this);
+//Handle Collision with bullet and enemy
+game.physics.arcade.overlap(bullets, boss1, bulletCollisionWithEnemy, null, this);
+    
+//Handle Collision with enemy bullets and main_player
+game.physics.arcade.overlap(main_player, enemyBullets, bulletCollisionWithPlayer, null, this);
 } // End Update Function 
 
-function fire(){
-    if(game.time.now > bulletTime){
+function render(){
+    //game.debug.text('Game Time ' + game.time.now, 100, 100);
+}
+
+function boss1_update(boss1){
+    if(boss1.alive){
+        // selct a random numer 
+        randomNumber = game.rnd.realInRange(1, 1000);
+        if(randomNumber <= boss1.attackFreq){
+            //console.log('FIRE BOSS 1!')
+            fireBullet();
+        }
+    } 
+} 
+
+function fire(main_player){
+    
+    if(main_player.alive){
+        if(game.time.now > bulletTime){
+            //Grabs bullets from pool
+            bullet = bullets.getFirstExists(false);
         
-        //Grabs bullets from pool
-        bullet = bullets.getFirstExists(false);
-        
-        if(bullet){
-            bullet.reset(main_player.x + 10, main_player.y + 5);
-            bullet.body.velocity.x = 400;
-            bulletTime = game.time.now + 200;
+            if(bullet){
+                bullet.reset(main_player.x + 10, main_player.y + 5);
+                bullet.body.velocity.x = 400;
+                bulletTime = game.time.now + 200;
+            }
         }
     }
 }
-function render(){
-    //game.debug.text('Game Time ' + game.time.now, 100, 100);
 
+function bulletCollisionWithEnemy(bullet, boss1){
+    bullet.kill();
+    boss1.kill();
 }
 
-
-/*
-*
-* How does the game end a it's loop, is there a game over state? 
-*/
-/*
-*
-*
-*/
+function bulletCollisionWithPlayer(main_player, enemyBullet){
+    main_player.kill();
+    enemyBullet.kill();
+    
+    
+    //Maybe add a life system
+    gameOver();
+}
 
 function fireBullet () {
-
 
     //  Grab the first bullet we can from the pool
     bullet = enemyBullets.getFirstExists(false);
 
-    if (bullet)
-    {
+    if (bullet){
         //  And fire it
         bullet.reset(boss1.x, boss1.y + 8);
         bullet.body.velocity.x = -400;
         bulletTime = game.time.now + 200;
-        }
-    
-
+    }
 }
 
 function resetBullet (bullet) {
@@ -260,4 +256,8 @@ function resetBullet (bullet) {
     //  Called if the bullet goes out of the screen
     bullet.kill();
 
+}
+
+function gameOver(){
+    gameover = true; 
 }
