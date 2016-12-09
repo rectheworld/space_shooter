@@ -4,13 +4,19 @@ var game = new Phaser.Game(640, 480, Phaser.AUTO, 'game-canvas', { preload: prel
 function preload() {
     //The sprites need to be loaded in order so in our case we need to 
     game.load.image('background', '../images/space.jpg');
-<<<<<<< HEAD
+
     
     /// Load in the Bad Guys 
     game.load.image('bossEnimy', "../images/enemy_ship_minion_tester_1.png")
     game.load.image('', '')
     
     game.load.image('bullet', "../images/bulletTest.png")
+    
+        //Load the player assets
+    game.load.image('main_player', '../images/player.png');
+    
+        //Load the projectile assets
+    game.load.image('bullet', '../images/bullet.png');
 }
 
 var scrolling; 
@@ -22,21 +28,10 @@ var bullets;
 var bulletTime = 0;
 var enemyBullet;
 var firingTimer = 0;
-=======
-    game.load.image('', '');
-    
-    //Load the player assets
-    game.load.image('main_player', '../images/player.png');
-    
-    //Load the projectile assets
-    game.load.image('bullet', '../images/bullet.png');
-}
-
 var scrolling;
 var main_player;
 var controls;
 
->>>>>>> e08b07e3ffda5552601dd5c5612c00dc9a4ea350
 
 var bullets;
 var fireButton;
