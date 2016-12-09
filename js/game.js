@@ -12,6 +12,12 @@ function preload() {
     
     game.load.image('bullet', "../images/bulletTest.png")
     
+    
+    game.load.image('bossEnimy_2', "../images/enemy_ship_minion_tester_2.png")
+
+    
+    
+    
         //Load the player assets
     game.load.image('main_player', '../images/player.png');
     
@@ -58,7 +64,7 @@ function create() {
     
     
     //Add the enemies 
-    boss1 = game.add.sprite(400, 150, 'bossEnimy');
+    boss1 = game.add.sprite(100, 240, 'bossEnimy');
     //set anchor point to center of the sprite
 	boss1.anchor.set(0.5);
 	//enable physics for the boss1 body
@@ -69,23 +75,15 @@ function create() {
     boss1 = boss1_deatils(boss1);
     
     
-//    ///Create Ememy Fire  (based off phaser example)
-//    //  Creates 40 bullets, using the 'bullet' graphic
-//    boss1Weapon = game.add.weapon(1, 'bullet');
-// 
-//
-//    //  The bullets will be automatically killed when they leave the world bounds
-//    boss1Weapon.bulletKillType = Phaser.Weapon.KILL_WORLD_BOUNDS;
-//
-//    //  Because our bullet is drawn facing up, we need to offset its rotation:
-//    boss1Weapon.bulletAngleOffset = 90;
-//
-//    //  The speed at which the bullets are fired
-//    boss1Weapon.bulletSpeed = 400;
-//	
-//    /// For Testing the ememy Fire 
-//    cursors = this.input.keyboard.createCursorKeys();
-//    fireButton = this.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
+    boss2 = game.add.sprite(100, 240, 'bossEnimy_2');
+    //set anchor point to center of the sprite
+	boss2.anchor.set(0.5);
+	//enable physics for the boss1 body
+	game.physics.enable(boss2, Phaser.Physics.ARCADE);
+	//make the boss1 collide with the bounds of the world
+	boss2.body.collideWorldBounds = true;
+	
+    boss2 = boss2_deatils(boss2);
     
 
     // The enemy's bullets
@@ -97,9 +95,6 @@ function create() {
     enemyBullets.setAll('anchor.y', 1);
     enemyBullets.setAll('outOfBoundsKill', true);
     enemyBullets.setAll('checkWorldBounds', true);
-    
-    
-    
     
     
     //Add Bullets 
@@ -132,17 +127,40 @@ function boss1_deatils(boss1){
     boss1.attackFreq = 5 // 10% of the time it will attace
     
     boss1.points = {
-        'x': [ 400, 128, 256, 384, 512, 608 ],
-        'y': [ 150, 240, 240, 240, 240, 240 ]
+        'x': [ 440, 440, 440, 440, 440, 440, 440,440],
+        'y': [ 100, 128, 256, 300, 382, 400, 410,100]
+        
     }
     
     boss1.path = [];
+    boss1.pi = 0;
     
     boss1.py = boss1.points.y;
-
-//    for (var i = 0; i < py.length; i++)
+    
+//    for (var i = 0; i < boss1.py.length; i++)
 //    {
-//        py[i] = game.rnd.realInRange(32, 432);
+//        boss1.py[i] = game.rnd.realInRange(32, 432);
+//    }
+
+    
+    // Some math magic 
+    var x = 1 / game.width;
+
+    for (var i = 0; i <= 1; i += x){
+//        var px = game.math.bezierInterpolation(boss1.points.x, i);
+//        var py = game.math.bezierInterpolation(boss1.points.y, i);    
+        
+        var px = game.math.linearInterpolation(boss1.points.x, i);
+        var py = game.math.linearInterpolation(boss1.points.y, i);
+        
+        boss1.path.push( { x: px, y: py });
+
+//        game.bmd.rect(px, py, 1, 1, 'rgba(255, 255, 255, 1)');    
+    }
+    
+//    for (var p = 0; p < this.points.x.length; p++)
+//    {
+//        this.bmd.rect(this.points.x[p]-3, this.points.y[p]-3, 6, 6, 'rgba(255, 0, 0, 1)');
 //    }
     
     return(boss1)
@@ -155,12 +173,102 @@ function boss1_update(boss1){
     
     if(randomNumber <= boss1.attackFreq){
         console.log('FIRE BOSS 1!')
-        fireBullet();
+        boss1_fireBullet();
+    }
+    
+//    console.log(boss1.pi)
+    
+    // more the boss
+    boss1.x = boss1.path[boss1.pi].x;
+    boss1.y = boss1.path[boss1.pi].y;
+
+    boss1.pi++;
+
+    if (boss1.pi >= boss1.path.length)
+    {
+        boss1.pi = 0;
     }
     
 
 }   
 
+function boss2_update(boss2){
+    // selct a random numer 
+    randomNumber = game.rnd.realInRange(1, 1000);
+    
+    if(randomNumber <= boss2.attackFreq){
+        console.log('FIRE BOSS 1!')
+        boss2_fireBullet();
+    }
+    
+//    console.log(boss2.pi)
+    
+    // more the boss
+    boss2.x = boss2.path[boss2.pi].x;
+    boss2.y = boss2.path[boss2.pi].y;
+
+    boss2.pi++;
+
+    if (boss2.pi >= boss2.path.length)
+    {
+        boss2.pi = 0;
+    }
+    
+
+} 
+
+
+function boss2_deatils(boss2){
+    
+    /// Change Size of the emimy 
+    boss2.scale.setTo(.5, .5);
+    
+    boss2.lives = 1 
+    
+    boss2.strength = 10
+    
+    boss2.attackFreq = 5 // 10% of the time it will attace
+    
+    boss2.points = {
+        'x': [ 540, 540, 540, 540, 540, 540, 540,540],
+        'y': [ 110, 138, 266, 290, 392, 400, 410,110]
+        
+    }
+    
+    boss2.path = [];
+    boss2.pi = 0;
+    
+    boss2.py = boss2.points.y;
+    
+//    for (var i = 0; i < boss2.py.length; i++)
+//    {
+//        boss2.py[i] = game.rnd.realInRange(32, 432);
+//    }
+
+    
+    // Some math magic 
+    var x = 1 / game.width;
+
+    for (var i = 0; i <= 1; i += x){
+//        var px = game.math.bezierInterpolation(boss2.points.x, i);
+//        var py = game.math.bezierInterpolation(boss2.points.y, i);    
+        
+        var px = game.math.linearInterpolation(boss2.points.x, i);
+        var py = game.math.linearInterpolation(boss2.points.y, i);
+        
+        boss2.path.push( { x: px, y: py });
+
+//        game.bmd.rect(px, py, 1, 1, 'rgba(255, 255, 255, 1)');    
+    }
+    
+//    for (var p = 0; p < this.points.x.length; p++)
+//    {
+//        this.bmd.rect(this.points.x[p]-3, this.points.y[p]-3, 6, 6, 'rgba(255, 0, 0, 1)');
+//    }
+    
+    return(boss2)
+    
+}
 
 //Runs constantly referred to as the game loop 
 function update() {
@@ -193,17 +301,7 @@ function update() {
     
     
     boss1_update(boss1)
-    
-    
-//   boss1.x = boss1.path[boss1.pi].x;
-//    boss1.y = boss1.path[boss1.pi].y;
-
-//    boss1.pi++;
-//
-//    if (boss1.pi >= boss1.path.length)
-//    {
-//        boss1.pi = 0;
-//    }
+    boss2_update(boss2)
     
     
     
@@ -238,7 +336,7 @@ function render(){
 *
 */
 
-function fireBullet () {
+function boss1_fireBullet () {
 
 
     //  Grab the first bullet we can from the pool
@@ -247,7 +345,7 @@ function fireBullet () {
     if (bullet)
     {
         //  And fire it
-        bullet.reset(boss1.x, boss1.y + 8);
+        bullet.reset(boss1.x - boss1.width/2, boss1.y + 8);
         bullet.body.velocity.x = -400;
         bulletTime = game.time.now + 200;
         }
@@ -255,6 +353,22 @@ function fireBullet () {
 
 }
 
+function boss2_fireBullet () {
+
+
+    //  Grab the first bullet we can from the pool
+    bullet = enemyBullets.getFirstExists(false);
+
+    if (bullet)
+    {
+        //  And fire it
+        bullet.reset(boss2.x - boss2.width/2, boss2.y + 8);
+        bullet.body.velocity.x = -400;
+        bulletTime = game.time.now + 200;
+        }
+    
+
+}
 function resetBullet (bullet) {
 
     //  Called if the bullet goes out of the screen
