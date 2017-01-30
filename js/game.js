@@ -9,7 +9,8 @@ var game = new Phaser.Game(640, 480, Phaser.AUTO, 'game-canvas');
 
 //Prepare assets to be loaded 
 var preload = function(game){};
-    
+
+///////////////////////////////////// The Preload State /////////////////////////////////
 preload.prototype = {    
     
     preload: function(){
@@ -21,24 +22,21 @@ preload.prototype = {
         /// Load in the Bad Guys 
         game.load.image('bossEnimy', "../images/enemy_ship_minion.png")
         game.load.image('', '')
-
         game.load.image('bullet', "../images/bulletTest.png")
-
-
         game.load.image('bossEnimy_2', "../images/enemy_ship_minion_tester_2.png")
-
-
-
-
-            //Load the player assets
+        //Load the player assets
         game.load.image('main_player', '../images/player.png');
-
-            //Load the projectile assets
+        //Load the projectile assets
         game.load.image('bullet', '../images/bullet.png');
-        
         /// Load in the Game over assets 
         game.load.image('gameover', '../images/gameOver.png');
         game.load.image('play', '../images/play.png');
+        game.load.image('victory', '../images/victory.png');
+        //Load power up image
+    game.load.image('life_powerup', "images/life_powerup.png");
+        
+        game.load.image('button', 'images/red-button-hi.png');
+    
         
     },
     create: function(){
@@ -48,6 +46,7 @@ preload.prototype = {
     
 } // End of the preload function 
 
+///////////////////////////////////// The Game State /////////////////////////////////
 
 var theGame = function(game){
 
@@ -65,6 +64,10 @@ var theGame = function(game){
     var main_player;
     var controls;
     var boss1; 
+    var boss2;
+    var lifeUp;
+    var livesText;
+    var lives;
 
 
     var bullets;
@@ -72,6 +75,7 @@ var theGame = function(game){
     var nextFire = 0; 
 //    var PlayerbulletTime = 0;
     var gameover; 
+    
     
 } /// The Game Object 
 
@@ -83,6 +87,7 @@ boss1_deatils: function(boss1){
     
     /// Change Size of the emimy 
     boss1.scale.setTo(.5, .5);
+    
     
     boss1.lives = 1 
     
@@ -101,34 +106,20 @@ boss1_deatils: function(boss1){
     
     boss1.py = boss1.points.y;
     
-//    for (var i = 0; i < boss1.py.length; i++)
-//    {
-//        boss1.py[i] = game.rnd.realInRange(32, 432);
-//    }
-
     
     // Some math magic 
     var x = 1 / game.width;
 
     for (var i = 0; i <= 1; i += x){
-//        var px = game.math.bezierInterpolation(boss1.points.x, i);
-//        var py = game.math.bezierInterpolation(boss1.points.y, i);    
-        
         var px = game.math.linearInterpolation(boss1.points.x, i);
         var py = game.math.linearInterpolation(boss1.points.y, i);
         
         boss1.path.push( { x: px, y: py });
 
-//        game.bmd.rect(px, py, 1, 1, 'rgba(255, 255, 255, 1)');    
+ 
     }
-    
-//    for (var p = 0; p < this.points.x.length; p++)
-//    {
-//        this.bmd.rect(this.points.x[p]-3, this.points.y[p]-3, 6, 6, 'rgba(255, 0, 0, 1)');
-//    }
-    
-    return(boss1)
-    
+
+    return(boss1)    
 
 },
     
@@ -142,8 +133,6 @@ boss1_update: function(boss1){
             console.log('FIRE BOSS 1!')
             this.boss1_fireBullet();
         }
-
-    //    console.log(boss1.pi)
 
         // more the boss
         boss1.x = boss1.path[boss1.pi].x;
@@ -226,16 +215,19 @@ boss2_update: function(boss2){
 
 }, 
 
+    
 render: function(){
     //game.debug.text('Game Time ' + game.time.now, 100, 100);
 },
 
+randomNum: function(){
+    var num = Math.floor((Math.random() * 440) + 10);
+    return num;
+},
 
 fire: function(){
     
-    if(main_player.alive){
-        console.log(game.time.now, this.PlayerbulletTime )
-        
+    if(main_player.alive){        
         if(game.time.now > this.PlayerbulletTime){
             console.log('in fire')
             //Grabs bullets from pool
@@ -250,28 +242,71 @@ fire: function(){
     }
 },
 
+    
 bulletCollisionWithEnemy: function(bullet, boss1){
+    this.deadbosses++;
     bullet.kill();
     boss1.kill();
 },
 
 bulletCollisionWithEnemy: function(bullet, boss2){
+    this.deadbosses++;
     bullet.kill();
     boss2.kill();
 },
-
-
-bulletCollisionWithPlayer: function(main_player, enemyBullet){
-    main_player.kill();
-    enemyBullet.kill();
     
-    
-    //Maybe add a life system
-    game.state.start('gameOver');
+bulletCollisionWithLifeUp: function(bullet, lifeUp){
+    bullet.kill();
+    lifeUp.kill();
+    this.lives++;
+    livesText.setText('Lives: '+this.lives)
 },
 
-boss1_fireBullet: function () {
+bulletCollisionWithPlayer: function(main_player, enemyBullet){
 
+    enemyBullet.kill();
+
+    this.lives--;
+
+    //when the user has one life left, a power up will appear on the screen
+    if (this.lives == 1) {
+
+        //random number is used to randomize spawning location of power up
+        var num = this.randomNum();
+
+        //add life powerup
+        lifeUp = game.add.sprite(350, num, 'life_powerup');
+        game.physics.enable(lifeUp, Phaser.Physics.ARCADE);
+        lifeUp.anchor.set(0.5);
+        lifeUp.scale.setTo(.5,.5);
+        lifeUp.body.velocity.y = 100;
+        lifeUp.body.collideWorldBounds = true;
+        lifeUp.body.bounce.set(1);
+
+    }
+    //update lives text and end game if players lives reach 0
+    if (this.lives) {
+        livesText.setText('Lives: ' + this.lives);
+    }  else{
+//        main_player.kill();
+//        stateText.text=" GAME OVER \n Click to restart";
+//        stateText.visible = true;
+//        livesText.setText('Lives: 0');
+
+        game.state.start('gameOver');
+    }
+    
+},
+
+//bulletCollisionWithPlayer: function(main_player, enemyBullet){
+//    main_player.kill();
+//    enemyBullet.kill();
+//    
+//    //Maybe add a life system
+//    game.state.start('gameOver');
+//},
+
+boss1_fireBullet: function () {
     //  Grab the first bullet we can from the pool
     bullet = enemyBullets.getFirstExists(false);
 
@@ -284,8 +319,6 @@ boss1_fireBullet: function () {
 },
 
 boss2_fireBullet: function() {
-
-
     //  Grab the first bullet we can from the pool
     bullet = enemyBullets.getFirstExists(false);
 
@@ -299,29 +332,36 @@ boss2_fireBullet: function() {
     
 
 },
-resetBullet: function(bullet) {
-
-    //  Called if the bullet goes out of the screen
-    bullet.kill();
-
-},
-
+    
+//resetBullet: function(bullet) {
+//
+//    //  Called if the bullet goes out of the screen
+//    bullet.kill();
+//
+//},
 
     
 //Ran once to load all the necessary sprites and objects in the game
 create: function() {
-    console.log('in Game Prototype')
-    
     gameover = false;
     game.physics.startSystem(Phaser.Physics.ARCADE);
     
     //Add Tile background to give scrolling effect
     scrolling = game.add.tileSprite(0, 0, 800, 600, 'background');
     
+    
+    //Add lives
+    this.lives = 3;
+    livesText = game.add.text(game.world.width - 555, 450, 'Lives : '+this.lives, { font: '20px Arial', fill: '#fff' });
+    livesText.anchor.set(1,0);
+
+    stateText = game.add.text(game.world.centerX,game.world.centerY,' ', { font: '84px Arial', fill: '#fff' });
+    stateText.anchor.setTo(0.5, 0.5);
+    stateText.visible = false;
+    
     //Create player object
-    main_player = game.add.sprite(50, 380/2, 'main_player');
-    //Double Check to see what this means 
-    //main_player.anchor.setTo(0.5, 0.5);
+    main_player = game.add.sprite(55, 380/2, 'main_player');
+    main_player.anchor.setTo(0.5, 0.5);
     game.physics.enable(main_player, Phaser.Physics.ARCADE);
     main_player.alive = true;
     
@@ -348,6 +388,13 @@ create: function() {
 	
     boss2 = this.boss2_deatils(boss2);
     
+    /// Counts the number of bosses the player has killed
+    /// In the Update Function, when deadbosses is equal to 2 the
+    /// Victory screen will show
+    this.deadbosses = 0;
+    
+    /// a placeholder for lifeup
+    lifeUp =null;
 
     // The enemy's bullets
     enemyBullets = game.add.group();
@@ -355,12 +402,12 @@ create: function() {
     enemyBullets.physicsBodyType = Phaser.Physics.ARCADE;
     enemyBullets.createMultiple(30, 'bullet');
     enemyBullets.setAll('anchor.x', 0.5);
-    enemyBullets.setAll('anchor.y', 1);
+    enemyBullets.setAll('anchor.y', 0.5);
     enemyBullets.setAll('outOfBoundsKill', true);
     enemyBullets.setAll('checkWorldBounds', true);
     
     
-    //Add Bullets 
+    //Add Player Bullets 
     bullets = game.add.group();
     bullets.enableBody = true; 
     bullets.physicsBodyType = Phaser.Physics.ARCADE;
@@ -368,7 +415,7 @@ create: function() {
     //Creates bullet pools
     bullets.createMultiple(20, 'bullet');
     bullets.setAll('anchor.x', 0.5);
-    bullets.setAll('anchor.y', 1);
+    bullets.setAll('anchor.y', 0.5);
     bullets.setAll('outOfBoundsKill', true);
     bullets.setAll('checkWorldBounds', true);
     
@@ -386,36 +433,58 @@ create: function() {
 
 //Runs constantly referred to as the game loop 
 update: function() {
+    
+//    if(boss1.alive == false && boss2.alive == false){
+//        game.state.start('victory')
+//    }
+    
+    if(this.deadbosses === 2){
+//        control.log('heyyyy in this if')
+        game.state.start('victory');
+    };
+    
     if(!gameover){
+        
+        /// Move the Space Background
+        /// Moving the picture of the background to the left makes it look like the ship is flying
         scrolling.tilePosition.x += 5;
+        
+        
+        /////////////////////////////////////
+        // MOVEMENT //
+        // This part of the code controls the movement of the player's spaceship 
+        /////////////////////////////////////
         
         //If this doesn't reset the player flies of the screen when velocity is changed
         main_player.body.velocity.setTo(0, 0);
-
+        
         //If up is pressed
         if(controls.up.isDown){
 //            game.debug.text('Game Time ' + game.time.now, 100, 100);
+            // If the up arrow is pressed move the ship up
             main_player.body.velocity.y = -200;
         }
-        //If down is pressed 
+        //If down arrow is pressed move the ship down
         else if(controls.down.isDown){
             main_player.body.velocity.y = 200;
         }
 
 
-        //Needs to be in it's own if statement 
-        if(fireButton.isDown){
-            //game.debug.text('Fire Pressed ' + fireButton.isDown, 32, 32);
-            this.fire(main_player);
-        }
-    
-        //Needs to be in it's own if statement 
+        ////////////////////////////////////
+        // SHOOTING LAZERS
+        ////////////////////////////////////
+
+        // If the fireButton (the space bar) is down, then lets fire a bullet  
         if(fireButton.isDown){
             //game.debug.text('Fire Pressed ' + fireButton.isDown, 32, 32);
             this.fire();
         }
         
-        //Controls the behavior of the boss
+        
+        /////////////////////////////////////
+        // ARTIFICAL INTELIGENCE 
+        // These update functions control the two bosses 
+        ////////////////////////////////////
         this.boss1_update(boss1);
         this.boss2_update(boss2)
         
@@ -426,13 +495,17 @@ update: function() {
         //Handle Collision with enemy bullets and main_player
         game.physics.arcade.overlap(main_player, enemyBullets, this.bulletCollisionWithPlayer, null, this);
         
+        //Handle Collision with bullet and powerup
+        game.physics.arcade.overlap(bullets, lifeUp, this.bulletCollisionWithLifeUp, null, this);
+
+        
     } // End of not game over test       
 
 }, // End Update Function 
 
 
 
-
+///////////////////////////////////// The Game Over States /////////////////////////////////
 gameOver: function(){
     gameover = true; 
 }
@@ -459,6 +532,28 @@ gameOver.prototype = {
 	}
 }
 
+
+
+
+var victory = function(game){
+    
+}
+
+victory.prototype = {
+    init: function(){
+		console.log("in Victory")
+	},
+  	create: function(){
+  		var gameOverTitle = this.game.add.sprite(640 /2, 200,"victory");
+		gameOverTitle.anchor.setTo(0.5,0.5);
+		var playButton = this.game.add.button(640 /2, 350,"play",this.playTheGame,this);
+		playButton.anchor.setTo(0.5,0.5);
+	},
+	playTheGame: function(){
+		this.game.state.start("theGame");
+	}
+}
+
 //////////////////////////////
 //Game States
 //Out Game will have three states
@@ -469,4 +564,5 @@ gameOver.prototype = {
 game.state.add("preload", preload);
 game.state.add("theGame", theGame);
 game.state.add("gameOver", gameOver);
+game.state.add("victory", victory);
 game.state.start("preload");
