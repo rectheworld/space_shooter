@@ -68,6 +68,9 @@ var theGame = function(game){
     var lifeUp;
     var livesText;
     var lives;
+    
+    var updateText;
+    
 
 
     var bullets;
@@ -89,7 +92,7 @@ boss1_deatils: function(boss1){
     boss1.scale.setTo(.5, .5);
     
     
-    boss1.lives = 1 
+    boss1.lives = 3;
     
     boss1.strength = 10
     
@@ -151,14 +154,14 @@ boss1_update: function(boss1){
 
 
 boss2_deatils: function(boss2){
-    boss2.alive = true
+    boss2.alive = true;
     
     /// Change Size of the emimy 
     boss2.scale.setTo(.5, .5);
     
-    boss2.lives = 1 
+    boss2.lives = 3;
     
-    boss2.strength = 10
+    boss2.strength = 10;
     
     boss2.attackFreq = 5 // 10% of the time it will attace
     
@@ -243,16 +246,23 @@ fire: function(){
 },
 
     
-bulletCollisionWithEnemy: function(bullet, boss1){
-    this.deadbosses++;
+boss1bulletCollisionWithEnemy: function(boss1, bullet){
+    
     bullet.kill();
-    boss1.kill();
+    this.boss1.lives--;
+    
+    boss1LivesText.setText('Quincy: '+this.boss1.lives)
+    
 },
 
-bulletCollisionWithEnemy: function(bullet, boss2){
-    this.deadbosses++;
+boss2bulletCollisionWithEnemy: function(boss2, bullet){
+    
     bullet.kill();
-    boss2.kill();
+    this.boss2.lives--;
+    
+    boss2LivesText.setText('Dru: '+this.boss2.lives)
+    
+
 },
     
 bulletCollisionWithLifeUp: function(bullet, lifeUp){
@@ -268,25 +278,11 @@ bulletCollisionWithPlayer: function(main_player, enemyBullet){
 
     this.lives--;
 
-    //when the user has one life left, a power up will appear on the screen
-    if (this.lives == 1) {
 
-        //random number is used to randomize spawning location of power up
-        var num = this.randomNum();
-
-        //add life powerup
-        lifeUp = game.add.sprite(350, num, 'life_powerup');
-        game.physics.enable(lifeUp, Phaser.Physics.ARCADE);
-        lifeUp.anchor.set(0.5);
-        lifeUp.scale.setTo(.5,.5);
-        lifeUp.body.velocity.y = 100;
-        lifeUp.body.collideWorldBounds = true;
-        lifeUp.body.bounce.set(1);
-
-    }
     //update lives text and end game if players lives reach 0
     if (this.lives) {
         livesText.setText('Lives: ' + this.lives);
+        
     }  else{
 //        main_player.kill();
 //        stateText.text=" GAME OVER \n Click to restart";
@@ -312,7 +308,7 @@ boss1_fireBullet: function () {
 
     if (bullet){
         //  And fire it
-        bullet.reset(boss1.x - boss1.width/2, boss1.y + 8);
+        bullet.reset(this.boss1.x - this.boss1.width/2, this.boss1.y + 8);
         bullet.body.velocity.x = -400;
         bulletTime = game.time.now + 200;
     }
@@ -325,7 +321,7 @@ boss2_fireBullet: function() {
     if (bullet)
     {
         //  And fire it
-        bullet.reset(boss2.x - boss2.width/2, boss2.y + 8);
+        bullet.reset(this.boss2.x - this.boss2.width/2, this.boss2.y + 8);
         bullet.body.velocity.x = -400;
         bulletTime = game.time.now + 200;
         }
@@ -350,10 +346,7 @@ create: function() {
     scrolling = game.add.tileSprite(0, 0, 800, 600, 'background');
     
     
-    //Add lives
-    this.lives = 3;
-    livesText = game.add.text(game.world.width - 555, 450, 'Lives : '+this.lives, { font: '20px Arial', fill: '#fff' });
-    livesText.anchor.set(1,0);
+
 
     stateText = game.add.text(game.world.centerX,game.world.centerY,' ', { font: '84px Arial', fill: '#fff' });
     stateText.anchor.setTo(0.5, 0.5);
@@ -367,26 +360,37 @@ create: function() {
     
     
     //Add the enemies 
-    boss1 = game.add.sprite(100, 240, 'bossEnimy');
+    this.boss1 = game.add.sprite(100, 240, 'bossEnimy');
     //set anchor point to center of the sprite
-	boss1.anchor.set(0.5);
+	this.boss1.anchor.set(0.5);
 	//enable physics for the boss1 body
-	game.physics.enable(boss1, Phaser.Physics.ARCADE);
+	game.physics.enable(this.boss1, Phaser.Physics.ARCADE);
 	//make the boss1 collide with the bounds of the world
-	boss1.body.collideWorldBounds = true;
+	this.boss1.body.collideWorldBounds = true;
 	
-    boss1 = this.boss1_deatils(boss1);
+    this.boss1 = this.boss1_deatils(this.boss1);
     
     
-    boss2 = game.add.sprite(100, 240, 'bossEnimy_2');
+    this.boss2 = game.add.sprite(100, 240, 'bossEnimy_2');
     //set anchor point to center of the sprite
-	boss2.anchor.set(0.5);
+	this.boss2.anchor.set(0.5);
 	//enable physics for the boss1 body
-	game.physics.enable(boss2, Phaser.Physics.ARCADE);
+	game.physics.enable(this.boss2, Phaser.Physics.ARCADE);
 	//make the boss1 collide with the bounds of the world
-	boss2.body.collideWorldBounds = true;
+	this.boss2.body.collideWorldBounds = true;
 	
-    boss2 = this.boss2_deatils(boss2);
+    this.boss2 = this.boss2_deatils(this.boss2);
+    
+    //Add lives Text
+    this.lives = 3;
+    livesText = game.add.text(game.world.width - 555, 450, 'Lives : '+this.lives, { font: '20px Arial', fill: '#fff' });
+    livesText.anchor.set(1,0);
+    
+    boss1LivesText = game.add.text(game.world.width - 400, 450, 'Quincy : '+this.boss1.lives, { font: '20px Arial', fill: '#fff' });
+    boss1LivesText.anchor.set(1,0);
+    
+    boss2LivesText = game.add.text(game.world.width - 250, 450, 'Dru : '+this.boss2.lives, { font: '20px Arial', fill: '#fff' });
+    boss2LivesText.anchor.set(1,0);
     
     /// Counts the number of bosses the player has killed
     /// In the Update Function, when deadbosses is equal to 2 the
@@ -425,6 +429,9 @@ create: function() {
     //Add the controls
     controls = game.input.keyboard.createCursorKeys();
     fireButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+    
+    updateAmt = 0;
+    updateText = game.add.text(10, 10, 'Game has updated '+ "0"+' times.' , { font: '20px Arial', fill: '#fff' });
 },
 
 
@@ -438,7 +445,11 @@ update: function() {
 //        game.state.start('victory')
 //    }
     
-    if(this.deadbosses === 2){
+    updateAmt++;
+    updateText.setText('The game has updated '+updateAmt+' times');
+    
+    
+    if(this.boss2.lives <= 0 && this.boss1.lives <= 0){
 //        control.log('heyyyy in this if')
         game.state.start('victory');
     };
@@ -447,8 +458,43 @@ update: function() {
         
         /// Move the Space Background
         /// Moving the picture of the background to the left makes it look like the ship is flying
-        scrolling.tilePosition.x += 5;
+        scrolling.tilePosition.x -= 5;
         
+
+        /////////////////////////////////////
+        // Are the Bosses DEAD???? //
+        // This part of the code checks to see if the boses are dead 
+        /////////////////////////////////////
+        if(this.boss1.lives === 0){
+            boss1LivesText.setText('Quincy: '+ 'DEAD')
+            this.boss1.kill()
+            this.deadbosses++;
+        }
+        if(this.boss2.lives === 0){
+            boss2LivesText.setText('Dru: '+'DEAD')
+            this.boss2.kill()
+            this.deadbosses++;
+        }
+        
+        /////////////////////////////////////
+        // Should we Generate a Power UP?  //
+        //  This is an IF statment, that creates a powerup if the lives is set to 0 
+        /////////////////////////////////////
+        if (this.lives == 1) {
+
+            //random number is used to randomize spawning location of power up
+            var num = this.randomNum();
+
+            //add life powerup
+            lifeUp = game.add.sprite(350, num, 'life_powerup');
+            game.physics.enable(lifeUp, Phaser.Physics.ARCADE);
+            lifeUp.anchor.set(0.5);
+            lifeUp.scale.setTo(.5,.5);
+            lifeUp.body.velocity.y = 100;
+            lifeUp.body.collideWorldBounds = true;
+            lifeUp.body.bounce.set(1);
+
+        }
         
         /////////////////////////////////////
         // MOVEMENT //
@@ -485,12 +531,12 @@ update: function() {
         // ARTIFICAL INTELIGENCE 
         // These update functions control the two bosses 
         ////////////////////////////////////
-        this.boss1_update(boss1);
-        this.boss2_update(boss2)
+        this.boss1_update(this.boss1);
+        this.boss2_update(this.boss2)
         
         //Handle Collision with bullet and enemy
-        game.physics.arcade.overlap(bullets, boss1, this.bulletCollisionWithEnemy, null, this);
-        game.physics.arcade.overlap(bullets, boss2, this.bulletCollisionWithEnemy, null, this);
+        game.physics.arcade.overlap(this.boss1, bullets, this.boss1bulletCollisionWithEnemy, null, this);
+        game.physics.arcade.overlap(this.boss2, bullets, this.boss2bulletCollisionWithEnemy, null, this);
 
         //Handle Collision with enemy bullets and main_player
         game.physics.arcade.overlap(main_player, enemyBullets, this.bulletCollisionWithPlayer, null, this);
