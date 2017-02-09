@@ -20,37 +20,36 @@ preload.prototype = {
         game.load.image('background', "../images/space.png")
 
         /// Load in the Bad Guys 
-        game.load.image('bossEnimy', "../images/enemy_ship_minion.png")
-        game.load.image('', '')
-        game.load.image('bullet', "../images/bulletTest.png")
-        game.load.image('bossEnimy_2', "../images/enemy_ship_minion_tester_2.png")
+        game.load.image('bossEnemy', "../images/enemy_ship_minion.png");
+        game.load.image('', '');
+        game.load.image('bullet', "../images/bulletTest.png");
+        game.load.image('bossEnemy_2', "../images/enemy_ship_minion_tester_2.png");
+        
         //Load the player assets
         game.load.image('main_player', '../images/player.png');
+        
         //Load the projectile assets
         game.load.image('bullet', '../images/bullet.png');
+        
         /// Load in the Game over assets 
         game.load.image('gameover', '../images/gameOver.png');
         game.load.image('play', '../images/play.png');
         game.load.image('victory', '../images/victory.png');
-        //Load power up image
-    game.load.image('life_powerup', "images/life_powerup.png");
         
+        //Load power up image
+        game.load.image('life_powerup', "images/life_powerup.png");
         game.load.image('button', 'images/red-button-hi.png');
     
         
     },
     create: function(){
-    this.game.state.start('theGame')    
+        this.game.state.start('theGame')    
     }
-    
-    
 } // End of the preload function 
 
 ///////////////////////////////////// The Game State /////////////////////////////////
 
 var theGame = function(game){
-
-    console.log('in the game object')
     var scrolling; 
     var sprite;
     var boss1Weapon;
@@ -68,11 +67,7 @@ var theGame = function(game){
     var lifeUp;
     var livesText;
     var lives;
-    
     var updateText;
-    
-
-
     var bullets;
     var fireButton;
     var nextFire = 0; 
@@ -84,20 +79,15 @@ var theGame = function(game){
 
 theGame.prototype = {
     
-boss1_deatils: function(boss1){
+boss1_details: function(boss1){
     
     boss1.alive = true
     
     /// Change Size of the emimy 
     boss1.scale.setTo(.5, .5);
-    
-    
     boss1.lives = 3;
-    
     boss1.strength = 10
-    
     boss1.attackFreq = 5 // 10% of the time it will attace
-    
     boss1.points = {
         'x': [ 440, 440, 440, 440, 440, 440, 440,440],
         'y': [ 100, 128, 256, 300, 382, 400, 410,100]
@@ -153,7 +143,7 @@ boss1_update: function(boss1){
 
 
 
-boss2_deatils: function(boss2){
+boss2_details: function(boss2){
     boss2.alive = true;
     
     /// Change Size of the emimy 
@@ -244,14 +234,24 @@ fire: function(){
         }
     }
 },
+    
+spawnPowerUp: function(){
+    this.lifeUp = game.add.sprite(350, 350, 'life_powerup');
+    game.physics.enable(this.lifeUp, Phaser.Physics.ARCADE);
+    this.lifeUp.anchor.set(0.5);
+    this.lifeUp.scale.setTo(.5,.5);
+    this.lifeUp.body.velocity.y = 100;
+    this.lifeUp.body.collideWorldBounds = true;
+    this.lifeUp.body.bounce.set(1);
+},
 
     
-boss1bulletCollisionWithEnemy: function(boss1, bullet){
+boss1bulletCollisionWithEnemy: function(boss, bullet){
     
     bullet.kill();
     this.boss1.lives--;
     
-    boss1LivesText.setText('Quincy: '+this.boss1.lives)
+    boss1LivesText.setText('Quincy: '+ this.boss.lives)
     
 },
 
@@ -260,16 +260,14 @@ boss2bulletCollisionWithEnemy: function(boss2, bullet){
     bullet.kill();
     this.boss2.lives--;
     
-    boss2LivesText.setText('Dru: '+this.boss2.lives)
-    
-
+    boss2LivesText.setText('Dru: '+this.boss2.lives);
 },
     
 bulletCollisionWithLifeUp: function(bullet, lifeUp){
     bullet.kill();
     lifeUp.kill();
     this.lives++;
-    livesText.setText('Lives: '+this.lives)
+    livesText.setText('Lives: '+ this.lives);
 },
 
 bulletCollisionWithPlayer: function(main_player, enemyBullet){
@@ -282,8 +280,15 @@ bulletCollisionWithPlayer: function(main_player, enemyBullet){
     //update lives text and end game if players lives reach 0
     if (this.lives) {
         livesText.setText('Lives: ' + this.lives);
-        
-    }  else{
+
+            if(this.lives == 1){
+
+                //add life powerup
+                this.spawnPowerUp();
+
+            }
+        }
+      else{
 //        main_player.kill();
 //        stateText.text=" GAME OVER \n Click to restart";
 //        stateText.visible = true;
@@ -360,7 +365,7 @@ create: function() {
     
     
     //Add the enemies 
-    this.boss1 = game.add.sprite(100, 240, 'bossEnimy');
+    this.boss1 = game.add.sprite(100, 240, 'bossEnemy');
     //set anchor point to center of the sprite
 	this.boss1.anchor.set(0.5);
 	//enable physics for the boss1 body
@@ -368,10 +373,10 @@ create: function() {
 	//make the boss1 collide with the bounds of the world
 	this.boss1.body.collideWorldBounds = true;
 	
-    this.boss1 = this.boss1_deatils(this.boss1);
+    this.boss1 = this.boss1_details(this.boss1);
     
     
-    this.boss2 = game.add.sprite(100, 240, 'bossEnimy_2');
+    this.boss2 = game.add.sprite(100, 240, 'bossEnemy_2');
     //set anchor point to center of the sprite
 	this.boss2.anchor.set(0.5);
 	//enable physics for the boss1 body
@@ -379,7 +384,7 @@ create: function() {
 	//make the boss1 collide with the bounds of the world
 	this.boss2.body.collideWorldBounds = true;
 	
-    this.boss2 = this.boss2_deatils(this.boss2);
+    this.boss2 = this.boss2_details(this.boss2);
     
     //Add lives Text
     this.lives = 3;
@@ -398,7 +403,15 @@ create: function() {
     this.deadbosses = 0;
     
     /// a placeholder for lifeup
-    lifeUp =null;
+//    lifeUp =null;
+//    lifeUp = game.add.sprite(350, 350, 'life_powerup');
+//    game.physics.enable(lifeUp, Phaser.Physics.ARCADE);
+//    lifeUp.anchor.set(0.5);
+//    lifeUp.scale.setTo(.5,.5);
+//    lifeUp.body.velocity.y = 100;
+//    lifeUp.body.collideWorldBounds = true;
+//    lifeUp.body.bounce.set(1);
+    
 
     // The enemy's bullets
     enemyBullets = game.add.group();
@@ -445,8 +458,7 @@ update: function() {
 //        game.state.start('victory')
 //    }
     
-    updateAmt++;
-    updateText.setText('The game has updated '+updateAmt+' times');
+    updateText.setText('The game has updated '+ updateAmt++ +' times');
     
     
     if(this.boss2.lives <= 0 && this.boss1.lives <= 0){
@@ -474,26 +486,6 @@ update: function() {
             boss2LivesText.setText('Dru: '+'DEAD')
             this.boss2.kill()
             this.deadbosses++;
-        }
-        
-        /////////////////////////////////////
-        // Should we Generate a Power UP?  //
-        //  This is an IF statment, that creates a powerup if the lives is set to 0 
-        /////////////////////////////////////
-        if (this.lives == 1) {
-
-            //random number is used to randomize spawning location of power up
-            var num = this.randomNum();
-
-            //add life powerup
-            lifeUp = game.add.sprite(350, num, 'life_powerup');
-            game.physics.enable(lifeUp, Phaser.Physics.ARCADE);
-            lifeUp.anchor.set(0.5);
-            lifeUp.scale.setTo(.5,.5);
-            lifeUp.body.velocity.y = 100;
-            lifeUp.body.collideWorldBounds = true;
-            lifeUp.body.bounce.set(1);
-
         }
         
         /////////////////////////////////////
@@ -536,13 +528,13 @@ update: function() {
         
         //Handle Collision with bullet and enemy
         game.physics.arcade.overlap(this.boss1, bullets, this.boss1bulletCollisionWithEnemy, null, this);
-        game.physics.arcade.overlap(this.boss2, bullets, this.boss2bulletCollisionWithEnemy, null, this);
+        game.physics.arcade.overlap(this.boss2, bullets, this.boss1bulletCollisionWithEnemy, null, this);
 
         //Handle Collision with enemy bullets and main_player
         game.physics.arcade.overlap(main_player, enemyBullets, this.bulletCollisionWithPlayer, null, this);
         
         //Handle Collision with bullet and powerup
-        game.physics.arcade.overlap(bullets, lifeUp, this.bulletCollisionWithLifeUp, null, this);
+        game.physics.arcade.overlap(bullets, this.lifeUp, this.bulletCollisionWithLifeUp, null, this);
 
         
     } // End of not game over test       
