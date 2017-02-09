@@ -45,7 +45,7 @@ var boss2;
 var lifeUp;
 var livesText;
 var lives = 3;
-var boss1Lives = 3;
+var boss1Lives = 5;
 var boss2Lives = 3;
 
 var button;
@@ -245,7 +245,7 @@ function boss1_update(boss1){
         randomNumber = game.rnd.realInRange(1, 1000);
 
         if(randomNumber <= boss1.attackFreq){
-            console.log('FIRE BOSS 1!')
+            console.log('FIRE BOB 1!')
             boss1_fireBullet();
         }
 
@@ -330,9 +330,9 @@ function boss2_update(boss2){
 
 
 //Runs constantly referred to as the game loop 
-function update() {
+function update() {                                               //!----------------- UPDAAAAAAAAAAAAAAATE ---------------!
 
-
+    console.log('test');
 
     updateAmt++;
     updateText.setText('The game has updated '+updateAmt+' times');
@@ -431,7 +431,7 @@ function bulletCollisionWithEnemy2(bullet, boss2, boss2Lives){
     bullet.kill();
     boss2.kill();
 
-    /*boss2Lives--;
+    /*boss2Lives--;     
 
 
     if (boss2Lives) {
@@ -459,11 +459,11 @@ function bulletCollisionWithLifeUp(bullet, lifeUp){
 function bulletCollisionWithPlayer(main_player, enemyBullet){
 
     enemyBullet.kill();
-
+    console.log('hit');
     lives--;
 
     //when the user has one life left, a power up will appear on the screen
-    if (lives == 1) {
+    if (lives == 1) {                                                      //!----------- POWERUP ---------------!
 
         //random number is used to randomize spawning location of power up
         var num = randomNum();
@@ -476,7 +476,6 @@ function bulletCollisionWithPlayer(main_player, enemyBullet){
         lifeUp.body.velocity.y = 100;
         lifeUp.body.collideWorldBounds = true;
         lifeUp.body.bounce.set(1);
-
     }
 
     //update lives text and end game if players lives reach 0

@@ -68,6 +68,7 @@ var theGame = function(game){
     var lifeUp;
     var livesText;
     var lives;
+    var powerUp;
     
     var updateText;
     
@@ -130,7 +131,7 @@ boss1_update: function(boss1){
     
     if(boss1.alive){
         // selct a random numer 
-        randomNumber = game.rnd.realInRange(1, 1000);
+        randomNumber = game.rnd.realInRange(1, 100);   //!--------------- BOSS 1 FIRERATE --------------------------------------!
 
         if(randomNumber <= boss1.attackFreq){
             console.log('FIRE BOSS 1!')
@@ -192,7 +193,7 @@ boss2_deatils: function(boss2){
 },
 
 
-boss2_update: function(boss2){
+boss2_update: function(boss2){                   //!--------------- BOSS 2 FIRERATE --------------------------------------!
     if(boss2.alive){
         // selct a random numer 
         randomNumber = game.rnd.realInRange(1, 1000);
@@ -269,6 +270,7 @@ bulletCollisionWithLifeUp: function(bullet, lifeUp){
     bullet.kill();
     lifeUp.kill();
     this.lives++;
+    this.powerUp = false;
     livesText.setText('Lives: '+this.lives)
 },
 
@@ -357,7 +359,7 @@ create: function() {
     main_player.anchor.setTo(0.5, 0.5);
     game.physics.enable(main_player, Phaser.Physics.ARCADE);
     main_player.alive = true;
-    
+    this.powerUp = false;
     
     //Add the enemies 
     this.boss1 = game.add.sprite(100, 240, 'bossEnimy');
@@ -444,7 +446,7 @@ update: function() {
 //    if(boss1.alive == false && boss2.alive == false){
 //        game.state.start('victory')
 //    }
-    
+    console.log(this.powerUp);
     updateAmt++;
     updateText.setText('The game has updated '+updateAmt+' times');
     
@@ -480,11 +482,11 @@ update: function() {
         // Should we Generate a Power UP?  //
         //  This is an IF statment, that creates a powerup if the lives is set to 0 
         /////////////////////////////////////
-        if (this.lives == 1) {
+        if (this.lives == 1 && this.powerUp == false) {                           //!----------------------- PowerUp Call --------------!
 
             //random number is used to randomize spawning location of power up
             var num = this.randomNum();
-
+            this.powerUp = true;                                                            
             //add life powerup
             lifeUp = game.add.sprite(350, num, 'life_powerup');
             game.physics.enable(lifeUp, Phaser.Physics.ARCADE);
