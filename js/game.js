@@ -64,8 +64,7 @@ var theGame = function(game){
     var controls;
     
     var lifeUp;
-    var playerLivesText;
-    var lives = 3; 
+    var playerLivesText; 
     var enemyText;
     var bossText;
     var powerUp;
@@ -113,7 +112,6 @@ createEnemy: function(properties, enemy){
     
     return enemy;
 },
-//Helper Function for enemy movement calculation
     
 enemy_update: function(enemy){                   
     if(enemy.alive){
@@ -180,6 +178,10 @@ enemy_fireBullet: function (enemy) {
       
 //Ran once to load all the necessary sprites and objects in the game
 create: function() {
+    
+    //Main player lives
+    this.lives = 3;
+    
     this.gameover = false;
     game.physics.startSystem(Phaser.Physics.ARCADE);
     
@@ -288,12 +290,15 @@ create: function() {
 //Runs constantly referred to as the game loop 
 update: function() {
     
+    //Demonstrates how many times this function is being ran. 
     updateText.setText('The game has updated '+ updateAmt++ +' times');
     
+    //If enemy lives are zero then we win the game! 
     if(this.enemy.lives <= 0){
         game.state.start('victory');
     };
     
+    //Check if game is over
     if(!this.gameover){
     
         /// Moving the picture of the background to the left makes it look like the ship is flying
@@ -372,9 +377,9 @@ bulletCollisionWithEnemy: function(enemy, bullet){
 bulletCollisionWithLifeUp: function(bullet, lifeUp){
     bullet.kill();
     lifeUp.kill();
-    this.lives++;
+    lives++;
     this.powerUp = false;
-    this.livesText.setText('Lives: '+ this.lives)
+    this.livesText.setText('Lives: '+ lives)
 },
 
 //Collision Detector for main player 
@@ -386,7 +391,7 @@ bulletCollisionWithPlayer: function(main_player, enemyBullet){
     
     //update lives text and end game if players lives reach 0
     if (this.lives) {
-        livesText.setText('Lives: ' + this.lives);
+        this.livesText.setText('Lives: ' + this.lives);
         
         //If my lives are low we spawn a power up.
         if(this.lives == 1){
@@ -466,7 +471,6 @@ victory.prototype = {
 		this.game.state.start("theGame");
 	}
 } 
-
 
 
 //////////////////////////////
