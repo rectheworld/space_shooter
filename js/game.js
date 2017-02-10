@@ -67,6 +67,8 @@ var theGame = function(game){
     var lifeUp;
     var livesText;
     var lives;
+    var powerUp;
+    
     var updateText;
     var bullets;
     var fireButton;
@@ -85,9 +87,14 @@ boss1_details: function(boss1){
     
     /// Change Size of the emimy 
     boss1.scale.setTo(.5, .5);
+    
+    
     boss1.lives = 3;
+    
     boss1.strength = 10
+    
     boss1.attackFreq = 5 // 10% of the time it will attace
+    
     boss1.points = {
         'x': [ 440, 440, 440, 440, 440, 440, 440,440],
         'y': [ 100, 128, 256, 300, 382, 400, 410,100]
@@ -120,7 +127,7 @@ boss1_update: function(boss1){
     
     if(boss1.alive){
         // selct a random numer 
-        randomNumber = game.rnd.realInRange(1, 1000);
+        randomNumber = game.rnd.realInRange(1, 100);   //!--------------- BOSS 1 FIRERATE --------------------------------------!
 
         if(randomNumber <= boss1.attackFreq){
             console.log('FIRE BOSS 1!')
@@ -182,7 +189,7 @@ boss2_details: function(boss2){
 },
 
 
-boss2_update: function(boss2){
+boss2_update: function(boss2){                   //!--------------- BOSS 2 FIRERATE --------------------------------------!
     if(boss2.alive){
         // selct a random numer 
         randomNumber = game.rnd.realInRange(1, 1000);
@@ -267,7 +274,8 @@ bulletCollisionWithLifeUp: function(bullet, lifeUp){
     bullet.kill();
     lifeUp.kill();
     this.lives++;
-    livesText.setText('Lives: '+ this.lives);
+    this.powerUp = false;
+    livesText.setText('Lives: '+this.lives)
 },
 
 bulletCollisionWithPlayer: function(main_player, enemyBullet){
@@ -280,15 +288,8 @@ bulletCollisionWithPlayer: function(main_player, enemyBullet){
     //update lives text and end game if players lives reach 0
     if (this.lives) {
         livesText.setText('Lives: ' + this.lives);
-
-            if(this.lives == 1){
-
-                //add life powerup
-                this.spawnPowerUp();
-
-            }
-        }
-      else{
+        
+    }  else{
 //        main_player.kill();
 //        stateText.text=" GAME OVER \n Click to restart";
 //        stateText.visible = true;
@@ -362,7 +363,7 @@ create: function() {
     main_player.anchor.setTo(0.5, 0.5);
     game.physics.enable(main_player, Phaser.Physics.ARCADE);
     main_player.alive = true;
-    
+    this.powerUp = false;
     
     //Add the enemies 
     this.boss1 = game.add.sprite(100, 240, 'bossEnemy');
@@ -403,15 +404,7 @@ create: function() {
     this.deadbosses = 0;
     
     /// a placeholder for lifeup
-//    lifeUp =null;
-//    lifeUp = game.add.sprite(350, 350, 'life_powerup');
-//    game.physics.enable(lifeUp, Phaser.Physics.ARCADE);
-//    lifeUp.anchor.set(0.5);
-//    lifeUp.scale.setTo(.5,.5);
-//    lifeUp.body.velocity.y = 100;
-//    lifeUp.body.collideWorldBounds = true;
-//    lifeUp.body.bounce.set(1);
-    
+    lifeUp =null;
 
     // The enemy's bullets
     enemyBullets = game.add.group();
@@ -486,6 +479,26 @@ update: function() {
             boss2LivesText.setText('Dru: '+'DEAD')
             this.boss2.kill()
             this.deadbosses++;
+        }
+        
+        /////////////////////////////////////
+        // Should we Generate a Power UP?  //
+        //  This is an IF statment, that creates a powerup if the lives is set to 0 
+        /////////////////////////////////////
+        if (this.lives == 1 && this.powerUp == false) {                           //!----------------------- PowerUp Call --------------!
+
+            //random number is used to randomize spawning location of power up
+            var num = this.randomNum();
+            this.powerUp = true;                                                            
+            //add life powerup
+            lifeUp = game.add.sprite(350, num, 'life_powerup');
+            game.physics.enable(lifeUp, Phaser.Physics.ARCADE);
+            lifeUp.anchor.set(0.5);
+            lifeUp.scale.setTo(.5,.5);
+            lifeUp.body.velocity.y = 100;
+            lifeUp.body.collideWorldBounds = true;
+            lifeUp.body.bounce.set(1);
+
         }
         
         /////////////////////////////////////
