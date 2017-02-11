@@ -242,11 +242,11 @@ create: function() {
                                     },
                                     "anchor": 0.2,
                                     "text":{
-                                        "x" : game.world.width - 200,
-                                        "y" : 450,
+                                        "x" : game.world.width - .50 * game.world.width, 
+                                        "y" : game.world.height  - 20,
                                         "anchor": {
                                             "x": "1",
-                                            "y": "1"
+                                            "y": "0"
                                         }
                                     }
 
@@ -269,11 +269,11 @@ create: function() {
                                     },
                                     "anchor": 0.5,
                                     "text":{
-                                        "x" : game.world.width - 20,
-                                        "y" : 450,
+                                        "x" : game.world.width - .20 * game.world.width,
+                                        "y" : game.world.height  - 20,
                                         "anchor": {
                                             "x": "1",
-                                            "y": "1"
+                                            "y": "0"
                                         }
                                     }
 
@@ -281,9 +281,10 @@ create: function() {
     
     
     //Add lives Text
-    this.livesText = game.add.text(game.world.width - 400, 427, 'Lives : ' + this.lives, { font: '20px Arial', fill: '#fff' });
-    this.livesText.anchor.set(2,0);
+    this.livesText = game.add.text(game.world.width - .80 * game.world.width, game.world.height  - 20, 'Lives : ' + this.lives, { font: '20px Arial', fill: '#fff' });
+    this.livesText.anchor.set(1,0);
     
+
 //    this.enemyText = game.add.text(game.world.width - 200, 450, 'Quincy : ' + this.enemy.lives, { font: '20px Arial', fill: '#fff' });
 //    this.enemyText.anchor.set(1,0);
     
