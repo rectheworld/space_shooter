@@ -155,11 +155,8 @@ createMainPlayer: function(options, player){
 fire: function(player){
     
     if(player.alive){        
-<<<<<<< HEAD
-        if(game.time.now > this.PlayerbulletTime){
-=======
+
         if(game.time.now > this.PlayerbulletTime){  //checks the current time against the "PlayerbulletTime" value
->>>>>>> final changes, game file commented to be ruined for kids to fix
             console.log('in fire')
             //Grabs bullets from pool
             bullet = bullets.getFirstExists(false);
@@ -246,11 +243,7 @@ create: function() {
                                     },
                                     "anchor": 0.2,
                                     "text":{
-<<<<<<< HEAD
-                                        "x" : game.world.width - 100,
-=======
                                         "x" : game.world.width - 200,
->>>>>>> final changes, game file commented to be ruined for kids to fix
                                         "y" : 450,
                                         "anchor": {
                                             "x": "1",
@@ -277,19 +270,11 @@ create: function() {
                                     },
                                     "anchor": 0.5,
                                     "text":{
-<<<<<<< HEAD
-                                        "x" : game.world.width - 100,
-                                        "y" : 450,
-                                        "anchor": {
-                                            "x": "0.5",
-                                            "y": "0.5"
-=======
                                         "x" : game.world.width - 20,
                                         "y" : 450,
                                         "anchor": {
                                             "x": "1",
                                             "y": "1"
->>>>>>> final changes, game file commented to be ruined for kids to fix
                                         }
                                     }
 
@@ -297,11 +282,7 @@ create: function() {
     
     
     //Add lives Text
-<<<<<<< HEAD
-    this.livesText = game.add.text(game.world.width - 200, 300, 'Lives : ' + this.lives, { font: '20px Arial', fill: '#fff' });
-=======
     this.livesText = game.add.text(game.world.width - 400, 427, 'Lives : ' + this.lives, { font: '20px Arial', fill: '#fff' });
->>>>>>> final changes, game file commented to be ruined for kids to fix
     this.livesText.anchor.set(2,0);
     
 //    this.enemyText = game.add.text(game.world.width - 200, 450, 'Quincy : ' + this.enemy.lives, { font: '20px Arial', fill: '#fff' });
@@ -383,10 +364,6 @@ update: function() {
         
         //If up is pressed
         if(controls.up.isDown){
-<<<<<<< HEAD
-
-=======
->>>>>>> final changes, game file commented to be ruined for kids to fix
             // If the up arrow is pressed move the ship up
             this.main_player.body.velocity.y = -200;
         }
@@ -417,11 +394,7 @@ update: function() {
         game.physics.arcade.overlap(this.boss, bullets, this.bulletCollisionWithEnemy, null, this);
 
         //Handle Collision with enemy bullets and main_player
-<<<<<<< HEAD
-        game.physics.arcade.overlap(this.main_player, enemyBullets, this.bulletCollisionWithPlayer, null, this);
-=======
-        //game.physics.arcade.overlap(this.main_player, enemyBullets, this.bulletCollisionWithPlayer, null, this);
->>>>>>> final changes, game file commented to be ruined for kids to fix
+        //game.physics.arcade.overlap(this.main_player, enemyBullets, this.bulletCollisionWithPlayer, null, this); //----------- UPDATE TASK -------------//
         
         //Handle Collision with bullet and powerup
         game.physics.arcade.overlap(bullets, this.lifeUp, this.bulletCollisionWithLifeUp, null, this);
