@@ -23,7 +23,7 @@ preload.prototype = {
         game.load.image('bossEnemy', "../images/enemy_ship_minion.png");
         game.load.image('', '');
         game.load.image('bullet', "../images/bulletTest.png");
-        game.load.image('bossEnemy_2', "../images/enemy_ship_minion_tester_2.png");
+        //game.load.image('bossEnemy_2', "../ERROR!/enemy_ship_minion_tester_2.png"); //---------------- PRELOAD TASK -----------------//
         
         //Load the player assets
         game.load.image('main_player', '../images/player.png');
@@ -155,7 +155,11 @@ createMainPlayer: function(options, player){
 fire: function(player){
     
     if(player.alive){        
+<<<<<<< HEAD
         if(game.time.now > this.PlayerbulletTime){
+=======
+        if(game.time.now > this.PlayerbulletTime){  //checks the current time against the "PlayerbulletTime" value
+>>>>>>> final changes, game file commented to be ruined for kids to fix
             console.log('in fire')
             //Grabs bullets from pool
             bullet = bullets.getFirstExists(false);
@@ -163,7 +167,7 @@ fire: function(player){
             if(bullet){
                 bullet.reset(player.x + 10, player.y + 5);
                 bullet.body.velocity.x = 400;
-                this.PlayerbulletTime = game.time.now + 200;
+                this.PlayerbulletTime = game.time.now + 200;  //sets the "PlayerbulletTime" value in the future so we have to wait until then to fire next
             }
         }
     }
@@ -242,7 +246,11 @@ create: function() {
                                     },
                                     "anchor": 0.2,
                                     "text":{
+<<<<<<< HEAD
                                         "x" : game.world.width - 100,
+=======
+                                        "x" : game.world.width - 200,
+>>>>>>> final changes, game file commented to be ruined for kids to fix
                                         "y" : 450,
                                         "anchor": {
                                             "x": "1",
@@ -253,7 +261,7 @@ create: function() {
                                 }, this.enemy);
     
     //Create Boss the boss does some funky stuff. :-) 
-    this.boss = game.add.sprite(200, 340, 'bossEnemy_2');
+    this.boss = game.add.sprite(200, 340, 'ERROR'); //---------------- ADD SPRITE TASK -----------------//
     this.boss = this.createEnemy({
                                     "name": "Akuma",
                                     "lives": 3,
@@ -265,22 +273,35 @@ create: function() {
                                     "attackFreq": 1,
                                     "points": {
                                         "x": [640, 640, 640, 440, 540, 540, 540, 540],
-                                        "y": [100, 100, 256, 300, 382, 400, 410, 100]
+                                        "y": [100, 100, 216, 300, 382, 400, 410, 100]
                                     },
                                     "anchor": 0.5,
                                     "text":{
+<<<<<<< HEAD
                                         "x" : game.world.width - 100,
                                         "y" : 450,
                                         "anchor": {
                                             "x": "0.5",
                                             "y": "0.5"
+=======
+                                        "x" : game.world.width - 20,
+                                        "y" : 450,
+                                        "anchor": {
+                                            "x": "1",
+                                            "y": "1"
+>>>>>>> final changes, game file commented to be ruined for kids to fix
                                         }
                                     }
 
                                 }, this.boss);
     
+    
     //Add lives Text
+<<<<<<< HEAD
     this.livesText = game.add.text(game.world.width - 200, 300, 'Lives : ' + this.lives, { font: '20px Arial', fill: '#fff' });
+=======
+    this.livesText = game.add.text(game.world.width - 400, 427, 'Lives : ' + this.lives, { font: '20px Arial', fill: '#fff' });
+>>>>>>> final changes, game file commented to be ruined for kids to fix
     this.livesText.anchor.set(2,0);
     
 //    this.enemyText = game.add.text(game.world.width - 200, 450, 'Quincy : ' + this.enemy.lives, { font: '20px Arial', fill: '#fff' });
@@ -332,12 +353,13 @@ create: function() {
 
 //Runs constantly referred to as the game loop 
 update: function() {
+    console.log(this.enemy.lives);
     
     //Demonstrates how many times this function is being ran. 
-    updateText.setText('The game has updated '+ updateAmt++ +' times');
+    //updateText.setText('The game has updated '+ updateAmt++ +' times');//---------------- UPDATE TASK -----------------//
     
     //If enemy lives are zero then we win the game! 
-    if(this.enemy.lives <= 0){
+    if(this.enemy.lives <= 0 && this.boss.lives <= 0){
         game.state.start('victory');
     };
     
@@ -361,7 +383,10 @@ update: function() {
         
         //If up is pressed
         if(controls.up.isDown){
+<<<<<<< HEAD
 
+=======
+>>>>>>> final changes, game file commented to be ruined for kids to fix
             // If the up arrow is pressed move the ship up
             this.main_player.body.velocity.y = -200;
         }
@@ -392,7 +417,11 @@ update: function() {
         game.physics.arcade.overlap(this.boss, bullets, this.bulletCollisionWithEnemy, null, this);
 
         //Handle Collision with enemy bullets and main_player
+<<<<<<< HEAD
         game.physics.arcade.overlap(this.main_player, enemyBullets, this.bulletCollisionWithPlayer, null, this);
+=======
+        //game.physics.arcade.overlap(this.main_player, enemyBullets, this.bulletCollisionWithPlayer, null, this);
+>>>>>>> final changes, game file commented to be ruined for kids to fix
         
         //Handle Collision with bullet and powerup
         game.physics.arcade.overlap(bullets, this.lifeUp, this.bulletCollisionWithLifeUp, null, this);
@@ -434,7 +463,7 @@ bulletCollisionWithPlayer: function(main_player, enemyBullet){
         this.livesText.setText('Lives: ' + this.lives);
         
         //If my lives are low we spawn a power up.
-        if(this.lives == 1){
+        if(this.lives == 1){                            //-------------- POWER UP TASK ------------------------//
             this.spawnPowerUp();
         }
     } 
