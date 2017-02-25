@@ -207,12 +207,6 @@ create: function() {
     stateText.anchor.setTo(0.5, 0.5);
     stateText.visible = false;
     
-    //Create player object
-//    main_player = game.add.sprite(55, 380/2, 'main_player');
-//    main_player.anchor.setTo(0.5, 0.5);
-//    game.physics.enable(main_player, Phaser.Physics.ARCADE);
-//    main_player.alive = true;
-    
     this.main_player = game.add.sprite(55, 380/2, 'main_player');
     this.main_player = this.createMainPlayer({
                                             "anchor":{
