@@ -3,50 +3,32 @@
 <head> <!-- The <head> element contains meta information about the document -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
+    
   <!--Links to scripts & stylesheets-->
+<!--
   <script src="https://code.jquery.com/jquery.min.js"></script>
   <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet" type="text/css" />
   <script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+-->
   <script src="js/phaser.min.js"></script>
+    <script src="game.js"></script>
   <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="css/cover.css">
   <title>My Game</title> <!-- The <title> element specifies a title for the document -->
 </head>
 
 <body> <!-- The <body> element contains the visible page content -->
-  <div class="site-wrapper"> <!-- The <div> tag defines a division or a section in an HTML document. -->
-    <div class="site-wrapper-inner">
-      <div class="cover-container">
-        <div class="masthead clearfix">
-          <div class="inner">
-            <h3 class="masthead-brand">My Game</h3>
-            <nav> <!-- The <nav> tag defines a set of navigation links. -->
-              <ul class="nav masthead-nav"> <!-- unordered lists -->
-                <li class="active"><a href="index.html">Home</a></li> <!-- The <li> tag defines a list item. -->
-                <li><a href="game.html">Game</a></li>
-                <li><a href="guide.html">Instruction Manual</a></li>
-              </ul>
-            </nav>
-          </div>
-        </div>
+  <div id="game-canvas"></div>
 
-        <div class="inner cover">
-          <h1 class="cover-heading">My Game</h1> <!-- The <h1> element defines a large heading -->
-          <p class="lead">My Game is the coolest game in the world play here to experience some cool stuff. </p>
-          <p class="lead">
-            <a href="game.html" class="btn btn-lg btn-default">Play Here</a> <!-- The <a> tag defines a hyperlink, which is used to link from one page to another. -->
-          </p>
-        </div>
+  <p></p>
+  <span style="display: inline">The Preload Function has Run: </span> <span id= "preload_counter" >0</span>
+  <p></p>
+  <span style="display: inline">The Create Function has Run: </span><span id= "create_counter">0</span>    
+  <p></p>
+  <span style="display: inline">The Update Function has Run: </span><span id= "update_counter">0</span>
 
-        <div class="mastfoot">
-          <div class="inner">
-            <p>My Game Company<a href="http://getbootstrap.com"></p> <!-- The <p> tag defines a paragraph. -->
-          </div>
-        </div>
 
-      </div>
-    </div>
-  </div>
+    
 </body>
 
 </html>

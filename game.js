@@ -1,13 +1,62 @@
+//////////////////////////////
+//This is 'game' variable is the soul of the game
+/////////////////////////////
+//var game = new Phaser.Game(640, 480, Phaser.AUTO, 'game-canvas');
+
 var game = new Phaser.Game(640, 480, Phaser.AUTO, 'game-canvas', { preload: preload, create: create, update: update, render: render });
 
-//Prepare assets to be loaded 
-function preload() {
-    //The sprites need to be loaded in order so in our case we need to 
+
+
+var scrolling; 
+var sprite;
+var boss1Weapon;
+var cursors;
+var fireButton;
+var bullets;
+var bulletTime = 0;
+var enemyBullet;
+var firingTimer = 0;
+var scrolling;
+var main_player;
+var controls;
+
+var lifeUp;
+var playerLivesText; 
+var enemyText;
+var bossText;
+var powerUp;
+
+var updateText;
+var bullets;
+var fireButton;
+var nextFire = 0; 
+var gameover; 
+
+var preload_counter = 0;
+var create_counter = 0;
+var update_counter = 0;
+
+var stateText;
+
+//variables for enemies and bosses
+var list_of_badguys = []
+var enemy; 
+var boss;
+var num_bosses;
+var deadbosses; 
+
+
+///////////////////////////////////// The Preload State /////////////////////////////////
+function preload(){
+    console.log('In Preload')
+    
+    
+        //The sprites need to be loaded in order so in our case we need to 
     game.load.image('background', 'images/space.jpg');
 
     
     /// Load in the Bad Guys 
-    game.load.image('bossEnimy', "images/enemy_ship_minion_tester_1.png");
+    game.load.image('bossEnemy', "images/enemy_ship_minion_tester_1.png");
     
     game.load.image('bullet', "images/bulletTest.png");
     
@@ -26,75 +75,186 @@ function preload() {
 
 
     game.load.image('button', 'images/red-button-hi.png');
-}
+    
+    game.load.image('bossEnemy_2', "images/enemy_ship_boss.png"); 
+    
+    
+    //////////////////////////////////////////////////////////////////////
+    ///// STEP 1: Load The Sprites Images! //////////////////
+    // Challange: Uncomment the code for the Second bad guy // 
+    //////////////////////////////////////////////////////////
+    
+    
 
-var scrolling;
-var sprite;
-var boss1Weapon;
-var cursors;
-var fireButton;
-var bullets;
-var bulletTime = 0;
-var enemyBullet;
-var firingTimer = 0;
-var scrolling;
-var main_player;
-var controls;
-var boss1;
-var boss2;
-var lifeUp;
-var livesText;
-var lives = 3;
-var boss1Lives = 5;
-var boss2Lives = 3;
+    /// For this game, all of our assets are going to come from phaser.io
+    /// this is awesome because they are already made and FREEEEEEE!!!!
 
-var button;
-var buttonText;
+    /// These next two lines of code tell phaser we are getting our graphics from
+    /// phaser.io
 
-//Scoring variables
-var score;
-var scoreString = '';
+//    game.load.baseURL = 'https://s3.amazonaws.com/phaser-assets'
+//    game.load.crossOrigin = 'anonymous';
+//
+//    //The sprites need to be loaded in order so in our case we need to
+//    game.load.image('background', "/space.png")
+//
+//    /// Load in the Bad Guys 
+//    game.load.image('bossEnemy', "/enemy_ship_minion.png");
+//    game.load.image('', '');
+//    game.load.image('bullet', "/bulletTest.png");
+//
+//    //Load the player assets
+//    game.load.image('main_player', '/player.png');
+//
+//    //Load the projectile assets
+//    game.load.image('bullet', '/bullet.png');
+//
+//    /// Load in the Game over assets 
+//    game.load.image('gameover', '/gameOver.png');
+//    game.load.image('play', '/play.png');
+//    game.load.image('victory', '/victory.png');
+//
+//    //Load power up image
+//    game.load.image('life_powerup', "/life_powerup.png");
+//    game.load.image('button', '/red-button-hi.png');
+
+     //---------------- PRELOAD TASK -----------------//
+    ///game.load.image('bossEnemy_2', "/enemy_ship_boss.png"); 
+
+    // ----------------END PRELOAD TASK ---------------///
+    
+    
+    
+    /// Show thw the Preload Function is running 
+    preload_counter++;
+    document.getElementById("preload_counter").innerHTML = preload_counter;
 
 
-var updateText;
-var updateAmt=0;
+} /// end preload 
 
-var bullets;
-var fireButton;
-var nextFire = 0; 
-var bulletTime = 0;
-var gameover;
-
-var stateText;
-
-//Ran once to load all the necessary sprites and objects in the game
 function create() {
+    
     gameover = false;
+    
+    /// Starts the Phaser Physics Engin
     game.physics.startSystem(Phaser.Physics.ARCADE);
-
+    
     //Add Tile background to give scrolling effect
     scrolling = game.add.tileSprite(0, 0, 800, 600, 'background');
+    
+    //
+    powerUp = false;
+    
+    /// Counts the number of bosses the player has killed
+    /// In the Update Function, when deadbosses is equal to the number of bosses 
+    /// Game will end 
+    deadbosses = 0;
+    
+    /// At this point in create we have made zero bosses 
+    // This will be used in the update function to see if we have killed all the bosses 
+    num_bosses = 0;
+    
+    ///// STEP 2: Create the Inital Code For the Sprites! ////
+    // Challange: Uncomment the code for the Second bad guy // 
+    //////////////////////////////////////////////////////////
+    
 
-    //game.add.state()
+    //////// This code Creates the Main Character 
+    /// This line Tells Phaser that we want to create a Sprite 
+    main_player = game.add.sprite(55, 380/2, 'main_player');
+    /// This line Tells Phasers some Details about the Sprite 
+    main_player = createMainPlayer({
+                                            "anchor":{
+                                                "x": 0.5,
+                                                "y": 0.5
+                                            },
+                                            //// This is how many lives the Boss Has
+                                            "lives": 3,
+                                            /// This is how big we want the main player to be 
+                                            "size": 1, 
+                                            "speed": 200,
+                                            "health": 100,
+                                        }, main_player);
+    
+    
+    
+    //////////////////////////////////////////////////////////////////////////////
+    //////// This code Creates the First Boss 
+    enemy = game.add.sprite(game.width, 240, 'bossEnemy');
+    /// This code tells Phaser some details about the First Boss 
+    enemy = createEnemy({
+                                    "name": "Bison",
+                                    "lives": 3,
+                                    "size": 1,
+                                    "strength": 5,
+                                    "attackFreq": 5,
+                                    "points": [[440, 100],
+                                               [440,428]],
+                                    "speed": 2000,
+                                    "anchor": 0.2,
+                                    "text":{
+                                        "x" : game.world.width - .50 * game.world.width, 
+                                        "y" : game.world.height  - 20,
+                                        "anchor": {
+                                            "x": "1",
+                                            "y": "0"
+                                        }
+                                    }
 
-    //Adding button to pause game
-    button = game.add.image(game.world.width - 98, 445, 'button');
-    button.scale.setTo(.15,.15);
-    buttonText = game.add.text(game.world.width - 80, 448, 'Pause', { font: '18px Arial', fill: '#fff' });
-    button.inputEnabled = true;
-    button.events.onInputDown.add(listener, this);
+                                }, enemy);
+    
+    /// We just added enemy as a bad guy, so we need to increases the number of bad guys in the game 
+    num_bosses = num_bosses + 1;
 
-
-    //Add lives
-    livesText = game.add.text(game.world.width - 555, 450, 'Lives : '+lives, { font: '20px Arial', fill: '#fff' });
+    
+    ///////////////////////////////////////////////////////////////////////////
+    //////// This code Creates the Second Boss 
+    //---------------- ADD SPRITE TASK -----------------//
+//    boss = game.add.sprite(game.width, 340, 'bossEnemy_2'); 
+//    /// This code tells Phaser some details about the Second Boss 
+//    boss = createEnemy({
+//                                    "name": "Akuma",
+//                                    "lives": 3,
+//                                    "size": 1,
+//                                    "strength": 10,
+//                                    "attackFreq": 1,
+//                                    "points": [[480, 100],
+//                                               [480,428]],
+//                                    "speed": 2000,
+//                                    "anchor": 0.5,
+//                                    "text":{
+//                                        "x" : game.world.width - .20 * game.world.width,
+//                                        "y" : game.world.height  - 20,
+//                                        "anchor": {
+//                                            "x": "1",
+//                                            "y": "0"
+//                                        }
+//                                    }
+//
+//                                }, boss);
+//    
+//    /// We just added boss as a bad guy, so we need to increases the number of bad guys in the game 
+//    num_bosses = num_bosses + 1;
+    
+    //---------------- END ADD SPRITE TASK -----------------//
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    
+    
+    
+    //Add lives Text
+    livesText = game.add.text(game.world.width - .80 * game.world.width, game.world.height  - 20, 'Health : ' + main_player.health, { font: '20px Arial', fill: '#fff' });
     livesText.anchor.set(1,0);
+    
 
-    stateText = game.add.text(game.world.centerX,game.world.centerY,' ', { font: '84px Arial', fill: '#fff' });
-    stateText.anchor.setTo(0.5, 0.5);
-    stateText.visible = false;
-
-    //creates player and two enemies
-    createSprites();
+//    enemyText = game.add.text(game.world.width - 200, 450, 'Quincy : ' + enemy.lives, { font: '20px Arial', fill: '#fff' });
+//    enemyText.anchor.set(1,0);
+    
+//    bossText= game.add.text(game.world.width - 450, 450, 'Bossman : ' + boss.lives, { font: '20px Arial', fill: '#fff' })
+//    bossText.anchor.set(1,0);
+    
+    
+    /// a placeholder for lifeup
+    lifeUp =null;
 
     // The enemy's bullets
     enemyBullets = game.add.group();
@@ -102,12 +262,11 @@ function create() {
     enemyBullets.physicsBodyType = Phaser.Physics.ARCADE;
     enemyBullets.createMultiple(30, 'bullet');
     enemyBullets.setAll('anchor.x', 0.5);
-    enemyBullets.setAll('anchor.y', 1);
+    enemyBullets.setAll('anchor.y', 0.5);
     enemyBullets.setAll('outOfBoundsKill', true);
     enemyBullets.setAll('checkWorldBounds', true);
     
-
-    //Add Bullets 
+    //Add Player Bullets 
     bullets = game.add.group();
     bullets.enableBody = true; 
     bullets.physicsBodyType = Phaser.Physics.ARCADE;
@@ -115,436 +274,438 @@ function create() {
     //Creates bullet pools
     bullets.createMultiple(20, 'bullet');
     bullets.setAll('anchor.x', 0.5);
-    bullets.setAll('anchor.y', 1);
+    bullets.setAll('anchor.y', 0.5);
     bullets.setAll('outOfBoundsKill', true);
     bullets.setAll('checkWorldBounds', true);
+    
+    // Bullet Timers
+    PlayerbulletTime = 0;
     
     //Add the controls
     controls = game.input.keyboard.createCursorKeys();
     fireButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-
-    //Scoring
-    //scoreString = 'Score : ';
-    //scoreText = game.add.text(10, 450, scoreString + score, { font: '20px Arial', fill: '#fff' });
-
-
-    updateText = game.add.text(10, 10, 'Game has updated '+updateAmt+' times.' , { font: '20px Arial', fill: '#fff' });
-
-}
-
-//created the add sprite function so that when the game is over, the function can be called to repopulate the screen with the sprites
-function createSprites(){
-    //Create player object
-    main_player = game.add.sprite(50, 380/2, 'main_player');
-    //Double Check to see what this means
-    //main_player.anchor.setTo(0.5, 0.5);
-    game.physics.enable(main_player, Phaser.Physics.ARCADE);
-    main_player.alive = true;
-    main_player.body.collideWorldBounds = true;
-
-
-    //Add the enemies
-    boss1 = game.add.sprite(100, 240, 'bossEnimy');
-    //set anchor point to center of the sprite
-    boss1.anchor.set(0.5);
-    //enable physics for the boss1 body
-    game.physics.enable(boss1, Phaser.Physics.ARCADE);
-    //make the boss1 collide with the bounds of the world
-    boss1.body.collideWorldBounds = true;
-
-    boss1 = boss1_deatils(boss1);
-
-
-
-    boss2 = game.add.sprite(100, 240, 'bossEnimy_2');
-    //set anchor point to center of the sprite
-    boss2.anchor.set(0.5);
-    //enable physics for the boss1 body
-    game.physics.enable(boss2, Phaser.Physics.ARCADE);
-    //make the boss1 collide with the bounds of the world
-    boss2.body.collideWorldBounds = true;
-
-    boss2 = boss2_deatils(boss2);
-
-}
-
-//Allows the game to pause
-/*having an issue with continuing the game while paused because pausing
-the everything on the game pane pause, making the listener not function for the button*/
-function listener (){
-
-    if(game.paused == false) {
-        game.paused = true;
-        buttonText.setText('Start');
-    } else {
-        game.paused = false;
-        buttonText.setText('Pause');
-    }
-}
-
-
-function boss1_deatils(boss1){
-
-    boss1.alive = true
-
-    /// Change Size of the emimy
-    boss1.scale.setTo(.5, .5);
-
-    boss1.lives = 1
-
-    boss1.strength = 10
-
-    boss1.attackFreq = 5 // 10% of the time it will attack
+    map_keys();
     
-    boss1.points = {
-        'x': [ 440, 440, 440, 440, 440, 440, 440,440],
-        'y': [ 100, 128, 256, 300, 382, 400, 410,100]
+    updateAmt = 0;
+    updateText = game.add.text(10, 10, 'Game has updated '+ "0"+' times.' , { font: '20px Arial', fill: '#fff' });
+    
+    /// Show thw the Create Function is running 
+    create_counter++;
+    document.getElementById("create_counter").innerHTML = create_counter;
+    
+    //Text to display if you won or lost
+    stateText = game.add.text(game.world.centerX,game.world.centerY,'', { font: '84px Arial', fill: '#fff' });
+    stateText.anchor.setTo(0.5, 0.5);
+    stateText.visible = false;
+}// End create function
+
+
+function update() {
+
+    //---------------- UPDATE TASK -----------------//
+    //Demonstrates how many times this function is being ran. 
+        /// Show thw the Create Function is running 
+    //update_counter++;
+    //document.getElementById("update_counter").innerHTML = update_counter;
+    //---------------- END UPDATE TASK -----------------//
+    
+    
+    /// Check to See if the Game has ended 
+    if(deadbosses === num_bosses){
+        stateText.visible = true;
+        stateText.setText("You Won!")
         
+    }else if(main_player.health <= 0){
+        stateText.visible = true;
+        stateText.setText("You Dead!")
     }
     
-    boss1.path = [];
-    boss1.pi = 0;
-    
-    boss1.py = boss1.points.y;
-    
-//    for (var i = 0; i < boss1.py.length; i++)
-//    {
-//        boss1.py[i] = game.rnd.realInRange(32, 432);
-//    }
 
-    
-    // Some math magic 
-    var x = 1 / game.width;
+    // Moving the picture of the background to the left makes it look like the ship is flying
+    scrolling.tilePosition.x -= 5;
 
-    for (var i = 0; i <= 1; i += x){
-//        var px = game.math.bezierInterpolation(boss1.points.x, i);
-//        var py = game.math.bezierInterpolation(boss1.points.y, i);    
-        
-        var px = game.math.linearInterpolation(boss1.points.x, i);
-        var py = game.math.linearInterpolation(boss1.points.y, i);
-        
-        boss1.path.push( { x: px, y: py });
+    /////////////////////////////////////
+    // Lives 
+    // These If statments control what happens when the bad guys lives reaches Zero
+    /////////////////////////////////////
 
-//        game.bmd.rect(px, py, 1, 1, 'rgba(255, 255, 255, 1)');    
-    }
-    
-//    for (var p = 0; p < this.points.x.length; p++)
-//    {
-//        this.bmd.rect(this.points.x[p]-3, this.points.y[p]-3, 6, 6, 'rgba(255, 0, 0, 1)');
-//    }
-    
-    return(boss1)
-    
-
-}
-    
-function boss1_update(boss1){
-    
-    if(boss1.alive){
-        // selct a random numer 
-        randomNumber = game.rnd.realInRange(1, 1000);
-
-        if(randomNumber <= boss1.attackFreq){
-            console.log('FIRE BOB 1!')
-            boss1_fireBullet();
-        }
-
-    //    console.log(boss1.pi)
-
-        // more the boss
-        boss1.x = boss1.path[boss1.pi].x;
-        boss1.y = boss1.path[boss1.pi].y;
-
-        boss1.pi++;
-
-        if (boss1.pi >= boss1.path.length)
-        {
-            boss1.pi = 0;
-        }
-    } // End of if Alive Statment
-
-}  
-
-
-
-function boss2_deatils(boss2){
-    boss2.alive = true
-    
-    /// Change Size of the emimy 
-    boss2.scale.setTo(.5, .5);
-    
-    boss2.attackFreq = 5 // 10% of the time it will attace
-    
-    boss2.points = {
-        'x': [ 540, 540, 540, 540, 540, 540, 540,540],
-        'y': [ 110, 138, 266, 290, 392, 400, 410,110]
-        
-    }
-    
-    boss2.path = [];
-    boss2.pi = 0;
-    
-    boss2.py = boss2.points.y;
-
-    // Some math magic 
-    var x = 1 / game.width;
-
-    for (var i = 0; i <= 1; i += x){
-
-        var px = game.math.linearInterpolation(boss2.points.x, i);
-        var py = game.math.linearInterpolation(boss2.points.y, i);
-        
-        boss2.path.push( { x: px, y: py });
-
-    }
-    
-    return(boss2) 
-}
-
-
-function boss2_update(boss2){
-    if(boss2.alive){
-        // selct a random numer 
-        randomNumber = game.rnd.realInRange(1, 1000);
-
-        if(randomNumber <= boss2.attackFreq){
-            console.log('FIRE BOSS 2!')
-            boss2_fireBullet();
-        }
-
-    //    console.log(boss2.pi)
-
-        // more the boss
-        boss2.x = boss2.path[boss2.pi].x;
-        boss2.y = boss2.path[boss2.pi].y;
-
-        boss2.pi++;
-
-        if (boss2.pi >= boss2.path.length)
-        {
-            boss2.pi = 0;
-        }
-    } // end boss 2 alive check
-
-} 
-
-
-//Runs constantly referred to as the game loop 
-function update() {                                               //!----------------- UPDAAAAAAAAAAAAAAATE ---------------!
-
-    console.log('test');
-
-    updateAmt++;
-    updateText.setText('The game has updated '+updateAmt+' times');
-
-    if(!gameover){
-        scrolling.tilePosition.x += 5;
-        
-        //If this doesn't reset the player flies of the screen when velocity is changed
-        main_player.body.velocity.setTo(0, 0);
-
-        //If up is pressed
-        if(controls.up.isDown){
-            game.debug.text('Game Time ' + game.time.now, 100, 100);
-            main_player.body.velocity.y = -200;
-        }
-        //If down is pressed 
-        else if(controls.down.isDown){
-            main_player.body.velocity.y = 200;
-        }
-
-
-        //Needs to be in it's own if statement 
-        if(fireButton.isDown){
-            //game.debug.text('Fire Pressed ' + fireButton.isDown, 32, 32);
-            fire(main_player);
-        }
-    
-        //Needs to be in it's own if statement 
-        if(fireButton.isDown){
-            //game.debug.text('Fire Pressed ' + fireButton.isDown, 32, 32);
-            fire();
-        }
-        
-        //Controls the behavior of the boss
-
-        boss1_update(boss1);
-        boss2_update(boss2);
-
-        //Handle Collision with bullet and enemy
-        game.physics.arcade.overlap(bullets, boss1, bulletCollisionWithEnemy1, null, this);
-
-        //Handle Collision with bullet and enemy
-        game.physics.arcade.overlap(bullets, boss2, bulletCollisionWithEnemy2, null, this);
-
-        //Handle Collision with bullet and powerup
-        game.physics.arcade.overlap(bullets, lifeUp, bulletCollisionWithLifeUp, null, this);
-
-        //Handle Collision with enemy bullets and main_player
-        game.physics.arcade.overlap(main_player, enemyBullets, bulletCollisionWithPlayer, null, this);
-
-
-        //attempting to prompt user to restart game if both bosses have been killed
-        //other method would involve using a counter that is incremented when a boss in killed, then prompt the user when the count equals 2
-        /*
-        if(boss1.kill == true && boss2.kill() == true){
-            stateText.text=" GAME OVER \n Click to restart";
-            stateText.visible = true;
-        }
-        */
-
-
+    if(enemy.lives === 0){
+        enemy.kill();
     }
 
-    // End of not game over test
+//---------------- Update TASK 1-----------------//
+//        if(boss.lives === 0){
+//            boss.kill();
+//        }
+//---------------- Update TASK 1-----------------//
+
+
+    /////////////////////////////////////
+    // MOVEMENT //
+    // This part of the code controls the movement of the player's spaceship 
+    /////////////////////////////////////
+
+    //If this doesn't reset the player flies of the screen when velocity is changed
+    main_player.body.velocity.setTo(0, 0);
+
+    //If up is pressed
+    if(controls.up.isDown){
+        // If the up arrow is pressed move the ship up
+        main_player.body.velocity.y = -main_player.speed;
+    }
+
+    //If down arrow is pressed move the ship down
+    else if(controls.down.isDown){
+        main_player.body.velocity.y = main_player.speed;
+    }
+
+    ////////////////////////////////////
+    // SHOOTING LAZERS
+    // this controls when the player shoots 
+    ////////////////////////////////////
+
+    // If the fireButton (the space bar) is down, then lets fire a bullet  
+    if(fireButton.isDown){
+        fire(main_player);
+    }
+
+    /////////////////////////////////////
+    // ARTIFICAL INTELIGENCE 
+    // These update functions control the two bosses 
+    ////////////////////////////////////
+    enemy_update(enemy);
+
+    /// ----- Update Task 2 ----///
+    
+    //enemy_update(boss);
+    
+    /// ----- Update Task 2 ---- ////
+
+    /////////////////////////////////////
+    // Custom //
+    // Try adding your own if statment  
+    /////////////////////////////////////
+    // Examples: 
+//        if(player.health === 50){
+//            player.size = 2
+//        }
+
+
+//        if(boss.health == 1){
+//            boss.attackFreq = 5
+//        }
+//        
+    
+//        if(boss.health < 3){
+//            boss.size
+//        }
+//
+
+
+    
+    /////////////////////////////////////
+    // Colision Detection //
+    // These may may not look it, but these lines are actrally special if statments 
+    // They check if two sprites are touching 
+    /////////////////////////////////////
+    game.physics.arcade.overlap(enemy, bullets, bulletCollisionWithEnemy, null, this);
+    game.physics.arcade.overlap(boss, bullets, bulletCollisionWithEnemy, null, this);
+
+
+    //---------------- Update TASK 3 -----------------//
+    
+    //Handle Collision with enemy bullets and main_player
+    game.physics.arcade.overlap(main_player, enemyBullets, bulletCollisionWithPlayer, null, this);
+
+    // ----------------Update PRELOAD TASK 3---------------///
+
+    //Handle Collision with bullet and powerup
+    game.physics.arcade.overlap(bullets, lifeUp, bulletCollisionWithLifeUp, null, this);
+
+
+
 
 } // End Update Function 
 
 
+//Utility Functions
 function render(){
     //game.debug.text('Game Time ' + game.time.now, 100, 100);
 }
 
 
-function fire(){
-    if(main_player.alive){
-        if(game.time.now > bulletTime){
+
+
+
+///////////////////////////////////// The Game State /////////////////////////////////
+//
+//var theGame = function(game){
+//    var scrolling; 
+//    var sprite;
+//    var boss1Weapon;
+//    var cursors;
+//    var fireButton;
+//    var bullets;
+//    var bulletTime = 0;
+//    var enemyBullet;
+//    var firingTimer = 0;
+//    var scrolling;
+//    var main_player;
+//    var controls;
+//    var map_keys;
+//    
+//    var lifeUp;
+//    var playerLivesText; 
+//    var enemyText;
+//    var bossText;
+//    var powerUp;
+//    
+//    var updateText;
+//    var bullets;
+//    var fireButton;
+//    var nextFire = 0; 
+//    var gameover; 
+//    
+//    //variables for enemies and bosses
+//    var enemy; 
+//    var boss;
+//    
+////    var enemyFireRate = 75;
+//    
+//    
+//} /// The Game Object 
+
+
+
+//Create Enemy
+function createEnemy(properties, enemy){
+    enemy.alive = true;
+    
+    enemy.scale.setTo(properties.size);
+    enemy.lives = properties.lives;
+    enemy.strength = properties.strength;
+    enemy.attackFreq = properties.attackFreq
+    enemy.anchor.set(properties.anchor);
+    enemy.speed = properties.speed;
+    
+	game.physics.enable(enemy, Phaser.Physics.ARCADE);
+    
+	//make the enemy collide with the bounds of the world
+	//enemy.body.collideWorldBounds = true;
+    
+    enemy.points = properties.points; 
+    
+    enemy.path = [];
+    enemy.pi = 0;
+    
+    enemy.py = enemy.points.y;
+    
+//    enemy = enemyMath(enemy);
+    
+    //Add Text for enemy
+    enemy.name = properties.name;
+    
+    enemy.livesText = game.add.text(properties.text.x, properties.text.y, enemy.name + ' Lives : ' + enemy.lives, { font: '20px Arial', fill: '#fff' });
+    enemy.livesText.anchor.setTo(properties.text.anchor.x, properties.text.anchor.y);
+    
+    point_index = 0;
+    x_index = 0;
+    y_index = 1;
+    
+    /// create a  tween to move this guy 
+    enemy.tweenA = game.add.tween(enemy).to( {x: enemy.points[point_index][x_index], y: enemy.points[point_index][y_index]}, enemy.speed, "Linear", true);
+    enemy.tweenB = game.add.tween(enemy).to( {x: enemy.points[point_index + 1][x_index], y: enemy.points[point_index + 1][y_index]}, enemy.speed, "Linear", true);
+
+    enemy.tweenA.chain(enemy.tweenB);
+    enemy.tweenB.chain(enemy.tweenA);
+    
+    enemy.tweenA.start();
+    
+    return enemy;
+}
+    
+function enemy_update(enemy){                   
+    if(enemy.alive){
+        // selct a random numer 
+        randomNumber = game.rnd.realInRange(1, 150); //!--------------- Enemy FIRERATE --------------------------------------!
+
+        if(randomNumber <= enemy.attackFreq){
+            enemy_fireBullet(enemy);
+        }
+
+        // move the boss
+//        enemy.x = enemy.path[enemy.pi].x;
+//        enemy.y = enemy.path[enemy.pi].y;
+//
+//        enemy.pi++;
+//
+//        if (enemy.pi >= enemy.path.length)
+//        {
+//            enemy.pi = 0;
+//        }
+    } // end boss 2 alive check
+}
+
+function createMainPlayer(options, player){
+    player.anchor.setTo(options.anchor.x, options.anchor.y);
+    game.physics.enable(player, Phaser.Physics.ARCADE);
+    
+    player.body.collideWorldBounds = true;
+    player.alive = true;
+    player.scale.setTo(options.size);
+    player.speed = options.speed;
+    player.health = options.health;
+    
+    return player;
+}
+
+//Main Player fire function
+function fire(player){
+    
+    if(player.alive){        
+        if(game.time.now > PlayerbulletTime){  //checks the current time against the "PlayerbulletTime" value
+            console.log('in fire')
             //Grabs bullets from pool
             bullet = bullets.getFirstExists(false);
         
             if(bullet){
-                bullet.reset(main_player.x + 10, main_player.y + 5);
+                bullet.reset(player.x + 10, player.y + 5);
                 bullet.body.velocity.x = 400;
-                bulletTime = game.time.now + 200;
+                PlayerbulletTime = game.time.now + 200;  //sets the "PlayerbulletTime" value in the future so we have to wait until then to fire next
             }
         }
     }
 }
-
-function bulletCollisionWithEnemy1(bullet, boss1){
-    bullet.kill();
-    boss1.kill();
+    
+//Spawns power up item 
+function spawnPowerUp(){
+    lifeUp = game.add.sprite(350, 350, 'life_powerup');
+    game.physics.enable(lifeUp, Phaser.Physics.ARCADE);
+    lifeUp.anchor.set(0.5);
+    lifeUp.scale.setTo(2,2); // make power up twice as big 
+    lifeUp.body.velocity.y = 100;
+    lifeUp.body.collideWorldBounds = true;
+    lifeUp.body.bounce.set(1);
 }
 
-function bulletCollisionWithEnemy2(bullet, boss2, boss2Lives){
-
-    bullet.kill();
-    boss2.kill();
-
-    /*boss2Lives--;     
-
-
-    if (boss2Lives) {
-
-        bullet.kill();
-
-    }else {
-
-        boss2.kill();
-        bullet.kill();
-
-    }*/
-
-
-
-}
-
-function bulletCollisionWithLifeUp(bullet, lifeUp){
-    bullet.kill();
-    lifeUp.kill();
-    lives++;
-    livesText.setText('Lives: '+lives)
-}
-
-function bulletCollisionWithPlayer(main_player, enemyBullet){
-
-    enemyBullet.kill();
-    console.log('hit');
-    lives--;
-
-    //when the user has one life left, a power up will appear on the screen
-    if (lives == 1) {                                                      //!----------- POWERUP ---------------!
-
-        //random number is used to randomize spawning location of power up
-        var num = randomNum();
-
-        //add life powerup
-        lifeUp = game.add.sprite(350, num, 'life_powerup');
-        game.physics.enable(lifeUp, Phaser.Physics.ARCADE);
-        lifeUp.anchor.set(0.5);
-        lifeUp.scale.setTo(.5,.5);
-        lifeUp.body.velocity.y = 100;
-        lifeUp.body.collideWorldBounds = true;
-        lifeUp.body.bounce.set(1);
-    }
-
-    //update lives text and end game if players lives reach 0
-    if (lives) {
-        livesText.setText('Lives: ' + lives);
-    }  else{
-        main_player.kill();
-        stateText.text=" GAME OVER \n Click to restart";
-        stateText.visible = true;
-        livesText.setText('Lives: 0');
-
-        game.input.onTap.addOnce(restart,this);
-    }
-
-
-}
-
-function randomNum(){
-    var num = Math.floor((Math.random() * 440) + 10);
-    return num;
-}
-
-function boss1_fireBullet () {
-
+function enemy_fireBullet(enemy) {
     //  Grab the first bullet we can from the pool
     bullet = enemyBullets.getFirstExists(false);
 
     if (bullet){
+        // give it a damage value
+        bullet.strength = enemy.strength;
+        
         //  And fire it
-        bullet.reset(boss1.x - boss1.width/2, boss1.y + 8);
+        bullet.reset(enemy.x - enemy.width/2, enemy.y + 8);
         bullet.body.velocity.x = -400;
         bulletTime = game.time.now + 200;
     }
 }
+      
+    
+///////////////////////////////////// Collision Detectors //////////////////////////////////
+    
+//Collision Detector for enemies
+function bulletCollisionWithEnemy(badguy, bullet){
+    
+    bullet.kill();
+    badguy.lives--;
+    if(badguy.lives == 0){
+        deadbosses +=1;
+    }
+    badguy.livesText.setText( badguy.name + ' Lives: ' + badguy.lives);  
+}
+  
+//Collision Detector for Life up badge
+function bulletCollisionWithLifeUp(bullet, lifeUp){
+    bullet.kill();
+    lifeUp.kill();
+    main_player.health+= 20;
+    powerUp = false;
+    livesText.setText('Health: '+ main_player.health)
+}
 
-function boss2_fireBullet () {
+//Collision Detector for main player 
+function bulletCollisionWithPlayer(main_player, enemyBullet){
 
+    enemyBullet.kill();
 
-    //  Grab the first bullet we can from the pool
-    bullet = enemyBullets.getFirstExists(false);
+    main_player.health = main_player.health - enemyBullet.strength
 
-    if (bullet)
-    {
-        //  And fire it
-        bullet.reset(boss2.x - boss2.width/2, boss2.y + 8);
-        bullet.body.velocity.x = -400;
-        bulletTime = game.time.now + 200;
+    //update lives text and end game if players lives reach 0
+    if (main_player.health) {
+        
+        livesText.setText('Health: ' + main_player.health);
+        
+        //If my lives are low we spawn a power up.
+        if(main_player.health == 30){                            //-------------- POWER UP TASK ------------------------//
+            spawnPowerUp();
         }
+    } 
+    else{
+        game.state.start('gameOver');
+    }
+}
+
+function gameOver(){
+    gameover = true; 
+}
     
 
+//Random Number generator
+function randomNum(){
+    var num = Math.floor((Math.random() * 440) + 10);
+    return num;
 }
-function resetBullet (bullet) {
+    
+//function enemyMath(bossEnemy){
+//var x = 1 / game.width;
+//
+//for (var i = 0; i <= 1; i += x){
+//    var px = game.math.linearInterpolation(bossEnemy.points.x, i);
+//    var py = game.math.linearInterpolation(bossEnemy.points.y, i);
+//
+//    bossEnemy.path.push( { x: px, y: py });
+//}
+//
+//return bossEnemy;
+//}
 
-    //  Called if the bullet goes out of the screen
-    bullet.kill();
 
+function map_keys(){
+
+    A_key = game.input.keyboard.addKey(Phaser.Keyboard.A);
+    B_key = game.input.keyboard.addKey(Phaser.Keyboard.B);
+    C_key = game.input.keyboard.addKey(Phaser.Keyboard.C);
+    D_key = game.input.keyboard.addKey(Phaser.Keyboard.D);
+    E_key = game.input.keyboard.addKey(Phaser.Keyboard.E);
+    F_key = game.input.keyboard.addKey(Phaser.Keyboard.F);
+    G_key = game.input.keyboard.addKey(Phaser.Keyboard.G);
+    H_key = game.input.keyboard.addKey(Phaser.Keyboard.H);
+    I_key = game.input.keyboard.addKey(Phaser.Keyboard.I);
+    J_key = game.input.keyboard.addKey(Phaser.Keyboard.J);
+    K_key = game.input.keyboard.addKey(Phaser.Keyboard.K);
+    L_key = game.input.keyboard.addKey(Phaser.Keyboard.L);
+    M_key = game.input.keyboard.addKey(Phaser.Keyboard.M);
+    N_key = game.input.keyboard.addKey(Phaser.Keyboard.N);
+    O_key = game.input.keyboard.addKey(Phaser.Keyboard.O);
+    P_key = game.input.keyboard.addKey(Phaser.Keyboard.P);
+    Q_key = game.input.keyboard.addKey(Phaser.Keyboard.Q);
+    R_key = game.input.keyboard.addKey(Phaser.Keyboard.R);
+    S_key = game.input.keyboard.addKey(Phaser.Keyboard.S);
+    T_key = game.input.keyboard.addKey(Phaser.Keyboard.T);
+    U_key = game.input.keyboard.addKey(Phaser.Keyboard.U);
+    V_key = game.input.keyboard.addKey(Phaser.Keyboard.V);
+    W_key = game.input.keyboard.addKey(Phaser.Keyboard.W);
+    X_key = game.input.keyboard.addKey(Phaser.Keyboard.X);
+    Y_key = game.input.keyboard.addKey(Phaser.Keyboard.Y);
+    Z_key = game.input.keyboard.addKey(Phaser.Keyboard.Z);
+
+//    game.input.keyboard.onDownCallback = function(e) {   
+//        //for demonstration, next line prints the keyCode to console
+//        console.log(e.keyCode); 
+//    }
 }
 
-//function is called when game is restarted after player is killed
-//screen is repopulated with sprites
-//need to fix lifeText to reset to 3 when player is killed and game is restarted
-function restart(){
 
-    boss1.kill();
-    boss2.kill();
-    main_player.kill();
-    lifeUp.kill();
-
-    createSprites();
-    stateText.visible = false;
-
-}
