@@ -1,5 +1,5 @@
 
-# Bots vs Aliens: A Lesson on IF Statements 
+# Space Shooter: The Secret Lift of Sprites 
 
 This game was made as part of the TAG Lesson (Session 4 for Javascript After School Lesson and Best Kids After School Program). 
 
